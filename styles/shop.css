@@ -1,0 +1,222 @@
+/* Scaffold shell — full visual port from style.css comes later */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo {
+  height: 44px;
+  width: 44px;
+  object-fit: cover;
+  display: block;
+}
+
+.logo--link {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px 16px;
+}
+
+.header-action-btn {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  text-transform: lowercase;
+  opacity: 0.72;
+  transition: opacity 0.15s ease;
+  text-decoration: none;
+}
+
+.header-action-btn:hover,
+.header-action-btn:focus-visible {
+  opacity: 1;
+}
+
+.shop-main {
+  flex: 1;
+  width: 100%;
+}
+
+.shop-placeholder {
+  font-family: var(--font-roboto-condensed), sans-serif;
+}
+
+.shop-placeholder h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.shop-placeholder p {
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
+
+.admin-stub {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 2rem 0;
+  font-family: var(--font-roboto-condensed), sans-serif;
+}
+
+.admin-stub h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.admin-stub p {
+  opacity: 0.75;
+  margin-bottom: 1.25rem;
+  line-height: 1.45;
+}
+
+.admin-stub a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.85;
+}
+
+.admin-stub a:hover {
+  opacity: 1;
+}
+
+.admin-stub__back {
+  display: inline-block;
+  margin-top: 2rem;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 13px;
+  text-transform: lowercase;
+  text-decoration: none;
+  opacity: 0.72;
+}
+
+.admin-stub__back:hover {
+  opacity: 1;
+}
+
+.checkout {
+  max-width: 32rem;
+}
+
+.checkout h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.checkout__empty,
+.checkout__total {
+  opacity: 0.7;
+  margin-bottom: 1.25rem;
+}
+
+.checkout__items {
+  list-style: none;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkout__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.92;
+}
+
+.checkout__field legend {
+  margin-bottom: 0.4rem;
+}
+
+.checkout fieldset {
+  border: none;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+.checkout__field input[type="text"],
+.checkout__field input[type="tel"],
+.checkout__field input[type="date"] {
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+}
+
+.checkout__dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.checkout__radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.85;
+}
+
+.checkout button {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #fff;
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.checkout button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.checkout__status {
+  margin-top: 1rem;
+  opacity: 0.85;
+}
+
+.checkout__status--error {
+  color: #ff8a8a;
+}
