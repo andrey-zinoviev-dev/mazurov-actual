@@ -1,6 +1,8 @@
 :root {
   --background: #000000;
   --foreground: #ffffff;
+  /* 16 padding-top + 44 logo + 12 padding-bottom */
+  --shop-header-height: 72px;
 }
 
 html {
@@ -10,7 +12,7 @@ html {
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -23,7 +25,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: 16px;
-  padding-bottom: 80px;
+  padding-bottom: 16px;
+}
+
+@media (max-width: 899px) {
+  body {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 * {
@@ -39,4 +47,14 @@ a {
 
 html {
   color-scheme: dark;
+}
+
+/* Single-column page layout (golden grid stays on category via .catalog-layout) */
+@media (min-width: 900px) {
+  .page-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
 }

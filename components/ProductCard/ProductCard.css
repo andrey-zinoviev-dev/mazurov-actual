@@ -1,0 +1,83 @@
+.product-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: #000000;
+  color: #ffffff;
+}
+
+.product-card__header,
+.product-card__footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.product-card__footer {
+  align-items: center;
+}
+
+.product-card__title {
+  margin: 0;
+  font-family: var(--font-roboto-condensed), Arial, Helvetica, sans-serif;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  line-height: 1.2;
+  min-height: 3.6em; /* 3 строки */
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.product-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.product-card__image {
+  object-fit: contain;
+  object-position: center;
+}
+
+.product-card__price {
+  margin: 0;
+  font-family: var(--font-roboto-condensed), Arial, Helvetica, sans-serif;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.product-card__icon-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.92;
+  transition: opacity 0.15s ease;
+}
+
+.product-card__icon-btn:hover,
+.product-card__icon-btn:focus-visible,
+.product-card__icon-btn--active {
+  opacity: 1;
+}
+
+.product-card__icon-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.product-card__icon {
+  display: block;
+}

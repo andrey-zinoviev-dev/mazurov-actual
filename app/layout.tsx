@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
+import { Container } from "@/components/Container/Container";
 import "./globals.css";
 import "@/styles/shop.css";
 
@@ -35,7 +36,9 @@ export default function RootLayout({
       lang="ru"
       className={`${robotoCondensed.variable} ${ibmPlexMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <Container>{children}</Container>
+      </body>
     </html>
   );
 }

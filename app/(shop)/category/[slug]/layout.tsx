@@ -1,14 +1,25 @@
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import { CatalogNav } from "@/components/CatalogNav/CatalogNav";
-import { CatalogShelfList } from "@/components/CatalogShelfList/CatalogShelfList";
-import { getAllNavShelves, getAllShelvesWithProducts } from "@/lib/catalog";
+import { getAllNavShelves, getShelfBySlug } from "@/lib/catalog";
 import "@/components/CatalogNav/CatalogNav.css";
 
-export default async function HomePage() {
-  const [shelves, navShelves] = await Promise.all([
-    getAllShelvesWithProducts(),
-    getAllNavShelves(),
-  ]);
+type CategorySlugLayoutProps = {
+  children: React.ReactNode;
+  params: Promise<{ slug: string }>;
+};
+
+export default async function CategorySlugLayout({
+  children,
+  params,
+}: CategorySlugLayoutProps) {
+  const { slug } = await params;
+  const shelf = await getShelfBySlug(slug);
+  if (!shelf) {
+    notFound();
+  }
+
+  const navShelves = await getAllNavShelves();
 
   return (
     <div className="catalog-layout">
@@ -23,9 +34,7 @@ export default async function HomePage() {
       >
         <CatalogNav title="Каталог" allHref="/" shelves={navShelves} />
       </Suspense>
-      <div className="catalog-layout__content">
-        <CatalogShelfList shelves={shelves} title="Mazurov Rental" />
-      </div>
+      <div className="catalog-layout__content">{children}</div>
     </div>
   );
 }

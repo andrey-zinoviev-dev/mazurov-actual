@@ -1,0 +1,55 @@
+.mobile-tab-bar {
+  position: fixed;
+  z-index: 40;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0;
+  min-height: 64px;
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: #0a0a0a;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-tab-bar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 6px 4px;
+  border: none;
+  background: none;
+  color: #ffffff;
+  opacity: 0.45;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  transition: opacity 0.15s ease;
+}
+
+.mobile-tab-bar__item svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.mobile-tab-bar__item:hover,
+.mobile-tab-bar__item:focus-visible,
+.mobile-tab-bar__item--active {
+  opacity: 1;
+}
+
+@media (min-width: 900px) {
+  .mobile-tab-bar {
+    display: none;
+  }
+}
