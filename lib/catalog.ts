@@ -2,13 +2,14 @@ import "server-only";
 
 import { cache } from "react";
 import type { Category, Product } from "@/generated/client";
-import type { CatalogNavShelf } from "@/lib/catalog-path";
+import type { CatalogNavRoot } from "@/lib/catalog-path";
 import { categoryPath } from "@/lib/catalog-path";
+import { productImageUrl } from "@/lib/product-image";
 import { prisma } from "@/lib/prisma";
 
-export { categoryPath, shelfSectionId } from "@/lib/catalog-path";
+export { categoryPath, productPath, shelfSectionId } from "@/lib/catalog-path";
 export { productImageUrl } from "@/lib/product-image";
-export type { CatalogNavShelf } from "@/lib/catalog-path";
+export type { CatalogNavRoot, CatalogNavShelf } from "@/lib/catalog-path";
 
 /** Раздел-корень (`parentId = null`). Пока живёт в данных под учёт; в URL не участвует. */
 export type Department = Category;
@@ -51,15 +52,23 @@ export const getAllShelvesWithProducts = cache(
 );
 
 /**
- * Все активные полки с товарами — для боковой навигации.
- * Ссылки ведут на `/category/{shelfSlug}`.
+ * Активные разделы с полками — для аккордеона боковой навигации.
+ * Root в URL не участвует; ссылки полок — `/category/{shelfSlug}`.
  */
-export const getAllNavShelves = cache(
-  async (): Promise<Array<CatalogNavShelf & { href: string }>> => {
+export type CatalogNavRootWithHrefs = {
+  slug: string;
+  name: string;
+  shelves: Array<CatalogNavRoot["shelves"][number] & { href: string }>;
+};
+
+export const getAllNavRoots = cache(
+  async (): Promise<CatalogNavRootWithHrefs[]> => {
     const departments = await prisma.category.findMany({
       where: { parentId: null, isActive: true },
       orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
       select: {
+        slug: true,
+        name: true,
         children: {
           where: {
             isActive: true,
@@ -71,13 +80,17 @@ export const getAllNavShelves = cache(
       },
     });
 
-    return departments.flatMap((department) =>
-      department.children.map((shelf) => ({
-        slug: shelf.slug,
-        name: shelf.name,
-        href: categoryPath(shelf.slug),
-      })),
-    );
+    return departments
+      .filter((department) => department.children.length > 0)
+      .map((department) => ({
+        slug: department.slug,
+        name: department.name,
+        shelves: department.children.map((shelf) => ({
+          slug: shelf.slug,
+          name: shelf.name,
+          href: categoryPath(shelf.slug),
+        })),
+      }));
   },
 );
 
@@ -120,3 +133,62 @@ export const getShelfBySlug = cache(
     return rows[0];
   },
 );
+
+/** Активный товар по id из URL `/product/[id]`. */
+export const getProductById = cache(async (id: number) => {
+  if (!Number.isInteger(id) || id <= 0) {
+    return undefined;
+  }
+
+  return prisma.product.findFirst({
+    where: { id, isActive: true },
+    include: {
+      category: {
+        select: { id: true, slug: true, name: true, parentId: true },
+      },
+    },
+  });
+});
+
+/** Лёгкий хит для header-поиска / combobox */
+export type ProductSearchHit = {
+  id: number;
+  name: string;
+  price: number;
+  imageSrc: string;
+};
+
+const SEARCH_MIN_QUERY = 2;
+const SEARCH_DEFAULT_LIMIT = 10;
+
+/**
+ * Поиск активных товаров по подстроке в имени.
+ * Для header combobox — быстро найти и положить в корзину.
+ */
+export async function searchProducts(
+  query: string,
+  limit = SEARCH_DEFAULT_LIMIT,
+): Promise<ProductSearchHit[]> {
+  const q = query.trim();
+  if (q.length < SEARCH_MIN_QUERY) {
+    return [];
+  }
+
+  const take = Math.min(Math.max(limit, 1), 20);
+  const products = await prisma.product.findMany({
+    where: {
+      isActive: true,
+      name: { contains: q },
+    },
+    orderBy: [{ name: "asc" }],
+    take,
+    select: { id: true, name: true, price: true, image: true },
+  });
+
+  return products.map((product) => ({
+    id: product.id,
+    name: product.name,
+    price: Number(product.price),
+    imageSrc: productImageUrl(product),
+  }));
+}

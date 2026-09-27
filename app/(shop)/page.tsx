@@ -1,31 +1,7 @@
-import { Suspense } from "react";
-import { CatalogNav } from "@/components/CatalogNav/CatalogNav";
 import { CatalogShelfList } from "@/components/CatalogShelfList/CatalogShelfList";
-import { getAllNavShelves, getAllShelvesWithProducts } from "@/lib/catalog";
-import "@/components/CatalogNav/CatalogNav.css";
+import { getAllShelvesWithProducts } from "@/lib/catalog";
 
 export default async function HomePage() {
-  const [shelves, navShelves] = await Promise.all([
-    getAllShelvesWithProducts(),
-    getAllNavShelves(),
-  ]);
-
-  return (
-    <div className="catalog-layout">
-      <Suspense
-        fallback={
-          <div className="catalog-nav">
-            <span className="catalog-nav__trigger" aria-hidden="true">
-              [ категории ▼ ]
-            </span>
-          </div>
-        }
-      >
-        <CatalogNav title="Каталог" allHref="/" shelves={navShelves} />
-      </Suspense>
-      <div className="catalog-layout__content">
-        <CatalogShelfList shelves={shelves} title="Mazurov Rental" />
-      </div>
-    </div>
-  );
+  const shelves = await getAllShelvesWithProducts();
+  return <CatalogShelfList shelves={shelves} />;
 }

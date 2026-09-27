@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import "./contacts-page.css";
 
 const PHONE_HREF = "tel:+79773016613";
@@ -16,26 +17,34 @@ export const metadata: Metadata = {
 export default function ContactsPage() {
   return (
     <section className="contacts-page page-split">
-      <h1>контакты</h1>
+      <Breadcrumbs
+        items={[
+          { label: "главная", href: "/" },
+          { label: "контакты" },
+        ]}
+      />
 
       <div className="contacts-page__content">
-        <div className="contacts-page__block">
-          <h2 className="contacts-page__label">телефон</h2>
-          <a className="contacts-page__phone" href={PHONE_HREF}>
-            {PHONE_LABEL}
-          </a>
+        <div className="contacts-page__info">
+          <div className="contacts-page__block">
+            <h2 className="contacts-page__label">телефон</h2>
+            <a className="contacts-page__phone" href={PHONE_HREF}>
+              {PHONE_LABEL}
+            </a>
+          </div>
+
+          <div className="contacts-page__block">
+            <h2 className="contacts-page__label">адрес самовывоза</h2>
+            <p className="contacts-page__address">{PICKUP_ADDRESS}</p>
+          </div>
         </div>
 
-        <div className="contacts-page__block">
-          <h2 className="contacts-page__label">адрес самовывоза</h2>
-          <p className="contacts-page__address">{PICKUP_ADDRESS}</p>
-          <div className="contacts-page__map">
-            <iframe
-              src={YANDEX_MAP_SRC}
-              title="Карта — адрес самовывоза"
-              allowFullScreen
-            />
-          </div>
+        <div className="contacts-page__map">
+          <iframe
+            src={YANDEX_MAP_SRC}
+            title="Карта — адрес самовывоза"
+            allowFullScreen
+          />
         </div>
       </div>
     </section>

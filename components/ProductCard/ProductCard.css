@@ -1,9 +1,17 @@
 .product-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   background: #000000;
   color: #ffffff;
+}
+
+/* Клик по карточке → страница товара; кнопки поверх ссылки. */
+.product-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 .product-card__header,
@@ -15,7 +23,9 @@
 }
 
 .product-card__footer {
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
 }
 
 .product-card__title {
@@ -24,7 +34,13 @@
   font-size: 1.25rem; /* 20px */
   font-weight: 700;
   line-height: 1.2;
-  min-height: 3.6em; /* 3 строки */
+  min-height: 3.6em; /* 3 строки — выравнивает карточки */
+  max-height: 3.6em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -51,7 +67,14 @@
   letter-spacing: 0.01em;
 }
 
+.product-card__cart {
+  position: relative;
+  z-index: 2;
+}
+
 .product-card__icon-btn {
+  position: relative;
+  z-index: 2;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;

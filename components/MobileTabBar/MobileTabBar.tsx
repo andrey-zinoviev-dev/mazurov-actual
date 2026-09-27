@@ -4,17 +4,32 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import "./MobileTabBar.css";
 
-export function MobileTabBar() {
+export type MobileTabBarCustomer = {
+  id: number;
+  phone: string;
+} | null;
+
+export function MobileTabBar({
+  customer = null,
+}: {
+  customer?: MobileTabBarCustomer;
+}) {
   const pathname = usePathname();
 
   const isFavorites = pathname === "/favorites";
   const isCart = pathname === "/cart" || pathname.startsWith("/cart/");
-  const isContacts = pathname === "/contacts";
+  const isAccount =
+    pathname === "/account" ||
+    pathname.startsWith("/account/") ||
+    pathname === "/login";
   const isCatalog =
     !isFavorites &&
     !isCart &&
-    !isContacts &&
+    !isAccount &&
     (pathname === "/" || pathname.startsWith("/category/"));
+
+  const profileHref = customer ? "/account" : "/login";
+  const profileLabel = customer ? "профиль" : "войти";
 
   return (
     <nav className="mobile-tab-bar" aria-label="Основная навигация">
@@ -58,16 +73,16 @@ export function MobileTabBar() {
       </Link>
 
       <Link
-        href="/contacts"
+        href={profileHref}
         className={
-          isContacts
+          isAccount
             ? "mobile-tab-bar__item mobile-tab-bar__item--active"
             : "mobile-tab-bar__item"
         }
-        aria-current={isContacts ? "page" : undefined}
+        aria-current={isAccount ? "page" : undefined}
       >
-        <ContactsIcon />
-        <span>контакты</span>
+        <ProfileIcon />
+        <span>{profileLabel}</span>
       </Link>
     </nav>
   );
@@ -116,7 +131,7 @@ function CartIcon() {
   );
 }
 
-function ContactsIcon() {
+function ProfileIcon() {
   return (
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
       <path
@@ -125,14 +140,7 @@ function ContactsIcon() {
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M7 4.5h10A1.5 1.5 0 0 1 18.5 6v12a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 18V6A1.5 1.5 0 0 1 7 4.5Z"
-      />
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        d="M9 9h6M9 12.5h6M9 16h3.5"
+        d="M12 12.5a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5ZM5.5 19.2a6.5 6.5 0 0 1 13 0"
       />
     </svg>
   );

@@ -21,6 +21,8 @@ function poolConfigFromDatabaseUrl(url: string) {
     connectionLimit: 5,
     connectTimeout: 10_000,
     acquireTimeout: 20_000,
+    // MySQL 8 + caching_sha2_password over TCP can hang the pool without this.
+    allowPublicKeyRetrieval: true,
     prepareCacheLength: 0,
   };
 }
@@ -36,8 +38,29 @@ function createPrismaClient() {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+/**
+ * В dev `globalThis.prisma` переживает HMR. После `prisma generate`
+ * (новые модели Order и т.п.) старый инстанс остаётся без делегатов →
+ * `prisma.order` === undefined → `.create` падает.
+ */
+function getClient(): PrismaClient {
+  const cached = globalForPrisma.prisma;
+  if (
+    cached &&
+    typeof cached.order?.create === "function" &&
+    typeof cached.customer?.upsert === "function" &&
+    typeof cached.otpChallenge?.create === "function" &&
+    typeof cached.customerSession?.create === "function" &&
+    typeof cached.promoCode?.findUnique === "function"
+  ) {
+    return cached;
+  }
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  const client = createPrismaClient();
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = client;
+  }
+  return client;
 }
+
+export const prisma = getClient();

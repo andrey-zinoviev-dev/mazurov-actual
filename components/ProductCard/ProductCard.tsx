@@ -1,14 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useSyncExternalStore } from "react";
+import Link from "next/link";
+import { ProductAddToCart } from "@/components/ProductAddToCart/ProductAddToCart";
 import { useFavorites } from "@/components/FavoritesProvider";
-import {
-  getServerCartSnapshot,
-  readCart,
-  subscribeCart,
-  toggleCartItem,
-} from "@/lib/cart";
+import { productPath } from "@/lib/catalog-path";
 import "./ProductCard.css";
 
 export type ProductCardProps = {
@@ -27,14 +23,15 @@ export function ProductCard({ id, name, price, imageSrc }: ProductCardProps) {
   const { isFavorite, toggle } = useFavorites();
   const favorited = isFavorite(id);
 
-  const cart = useSyncExternalStore(subscribeCart, readCart, getServerCartSnapshot);
-  const inCart = useMemo(
-    () => cart.some((line) => line.id === id),
-    [cart, id],
-  );
-
   return (
     <article className="product-card">
+      {/* Растянутая ссылка на всю карточку; кнопки выше по z-index. */}
+      <Link
+        href={productPath(id)}
+        className="product-card__link"
+        aria-label={name}
+      />
+
       <header className="product-card__header">
         <h3 className="product-card__title">{name}</h3>
         <button
@@ -53,7 +50,7 @@ export function ProductCard({ id, name, price, imageSrc }: ProductCardProps) {
       <div className="product-card__media">
         <Image
           src={imageSrc}
-          alt={name}
+          alt=""
           fill
           sizes="(max-width: 640px) 100vw, 320px"
           className="product-card__image"
@@ -62,15 +59,14 @@ export function ProductCard({ id, name, price, imageSrc }: ProductCardProps) {
 
       <footer className="product-card__footer">
         <p className="product-card__price">{formatPricePerDay(price)}</p>
-        <button
-          type="button"
-          className={`product-card__icon-btn${inCart ? " product-card__icon-btn--active" : ""}`}
-          aria-label={inCart ? "Убрать из корзины" : "Добавить в корзину"}
-          aria-pressed={inCart}
-          onClick={() => toggleCartItem({ id, name, price, imageSrc })}
-        >
-          {inCart ? <CheckIcon /> : <PlusIcon />}
-        </button>
+        <ProductAddToCart
+          id={id}
+          name={name}
+          price={price}
+          imageSrc={imageSrc}
+          variant="compact"
+          className="product-card__cart"
+        />
       </footer>
     </article>
   );
@@ -93,49 +89,6 @@ function HeartIcon({ filled }: { filled: boolean }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M12 20.25s-7.2-4.35-7.2-9.15A3.9 3.9 0 0 1 12 7.65a3.9 3.9 0 0 1 7.2 3.45c0 4.8-7.2 9.15-7.2 9.15Z"
-      />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg
-      className="product-card__icon"
-      viewBox="0 0 24 24"
-      width="22"
-      height="22"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        d="M12 5v14M5 12h14"
-      />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      className="product-card__icon"
-      viewBox="0 0 24 24"
-      width="22"
-      height="22"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M5.5 12.5 10 17l8.5-9"
       />
     </svg>
   );

@@ -8,11 +8,15 @@ import "./CatalogShelfList.css";
 
 type CatalogShelfListProps = {
   shelves: ShelfWithProducts[];
-  title: string;
+  /** На странице категории заголовок уже в breadcrumbs — секции без h2. */
+  showSectionTitles?: boolean;
 };
 
 /** Полки подряд: заголовок полки → сетка товаров. */
-export function CatalogShelfList({ shelves, title }: CatalogShelfListProps) {
+export function CatalogShelfList({
+  shelves,
+  showSectionTitles = true,
+}: CatalogShelfListProps) {
   const sections = shelves.filter((shelf) => shelf.products.length > 0);
 
   return (
@@ -23,7 +27,7 @@ export function CatalogShelfList({ shelves, title }: CatalogShelfListProps) {
           id={shelfSectionId(shelf.id)}
           className="catalog-shelf-list__section"
         >
-          <h2>{shelf.name}</h2>
+          {showSectionTitles ? <h2>{shelf.name}</h2> : null}
           <ul className="catalog-shelf-list__products">
             {shelf.products.map((product) => (
               <li key={product.id}>

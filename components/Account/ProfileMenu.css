@@ -1,0 +1,78 @@
+.profile-menu {
+  position: relative;
+  display: none;
+}
+
+.profile-menu__trigger {
+  display: inline-flex;
+}
+
+.profile-menu__panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 50;
+  min-width: 11.5rem;
+  padding: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: #141414;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+.profile-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #ffffff;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.82;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease;
+}
+
+.profile-menu__item svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.profile-menu__item:hover,
+.profile-menu__item:focus-visible,
+.profile-menu__item--active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-menu__divider {
+  height: 1px;
+  margin: 0.35rem 0.45rem;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.profile-menu__logout {
+  padding: 0.2rem 0.25rem 0.25rem;
+}
+
+.profile-menu__logout-btn {
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .profile-menu {
+    display: block;
+  }
+}

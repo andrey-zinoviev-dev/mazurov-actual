@@ -1,0 +1,50 @@
+.product-page__stub {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 720px;
+}
+
+.product-page__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.product-page__image {
+  object-fit: contain;
+  object-position: center;
+}
+
+.product-page__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.product-page__price {
+  margin: 0;
+  font-family: var(--font-roboto-condensed), Arial, Helvetica, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.product-page__note {
+  margin: 0;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  opacity: 0.75;
+  max-width: 36rem;
+}
+
+@media (min-width: 720px) {
+  .product-page__stub {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
+  }
+}

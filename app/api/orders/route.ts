@@ -1,8 +1,9 @@
+import { createOrder } from "@/lib/create-order";
 import { validateOrder, type CreateOrderRequest } from "@/lib/orders";
+import { PromoError } from "@/lib/promo";
+import { notifyNewOrder } from "@/lib/telegram-notify";
 
 export const dynamic = "force-dynamic";
-
-let nextStubOrderId = 1;
 
 export async function POST(request: Request) {
   let body: CreateOrderRequest;
@@ -20,8 +21,20 @@ export async function POST(request: Request) {
     return Response.json({ success: false, error }, { status: 400 });
   }
 
-  return Response.json(
-    { success: true, orderId: nextStubOrderId++, stub: true },
-    { status: 201 },
-  );
+  try {
+    const order = await createOrder(body);
+    await notifyNewOrder(order);
+    return Response.json(
+      { success: true, orderId: order.orderNumber },
+      { status: 201 },
+    );
+  } catch (err) {
+    if (err instanceof PromoError) {
+      return Response.json({ success: false, error: err.message }, { status: 400 });
+    }
+    const message =
+      err instanceof Error ? err.message : "Не удалось создать заказ";
+    console.error("createOrder failed", err);
+    return Response.json({ success: false, error: message }, { status: 500 });
+  }
 }

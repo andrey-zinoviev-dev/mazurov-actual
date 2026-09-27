@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { CatalogShelfList } from "@/components/CatalogShelfList/CatalogShelfList";
 import { getShelfBySlug, getShelfSlugs } from "@/lib/catalog";
 
@@ -35,5 +36,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
-  return <CatalogShelfList shelves={[shelf]} title={shelf.name} />;
+  return (
+    <div className="page-split">
+      <Breadcrumbs
+        items={[
+          { label: "каталог", href: "/" },
+          { label: shelf.name },
+        ]}
+      />
+      <CatalogShelfList shelves={[shelf]} showSectionTitles={false} />
+    </div>
+  );
 }

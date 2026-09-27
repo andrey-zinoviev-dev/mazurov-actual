@@ -3,6 +3,9 @@
   --foreground: #ffffff;
   /* 16 padding-top + 44 logo + 12 padding-bottom */
   --shop-header-height: 72px;
+  /* Общая сетка хедера и каталога (сайдбар | контент) */
+  --catalog-sidebar-width: 280px;
+  --catalog-gap: 48px;
 }
 
 html {

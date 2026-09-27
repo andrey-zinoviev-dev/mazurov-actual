@@ -1,0 +1,239 @@
+.account-page {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  text-transform: lowercase;
+}
+
+@media (max-width: 899px) {
+  .account-page {
+    max-width: 28rem;
+  }
+}
+
+.account-page__body {
+  max-width: 36rem;
+}
+
+.account-page--login .account-page__body--centered {
+  margin-inline: auto;
+  max-width: 22rem;
+  width: 100%;
+}
+
+.account-page__head--centered {
+  justify-content: center;
+}
+
+.account-page--login .account-form {
+  margin-inline: auto;
+  width: 100%;
+}
+
+.otp-resend {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.otp-resend .cart-page__text-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.otp-resend__timer {
+  margin: 0;
+}
+
+.account-page__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.account-page__head h1 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  opacity: 0.55;
+}
+
+.account-page__phone {
+  margin: 0 0 1.5rem;
+  font-size: 0.85rem;
+  opacity: 0.55;
+}
+
+.account-page__empty {
+  margin: 0;
+  opacity: 0.55;
+  font-size: 0.95rem;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 22rem;
+}
+
+.account-form__hint,
+.account-form__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  opacity: 0.55;
+}
+
+.account-form__secondary {
+  align-self: flex-start;
+}
+
+.account-orders {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.account-orders__item {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.account-orders__item:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.account-orders__link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 1rem;
+  padding: 1rem 0;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.account-orders__link:hover,
+.account-orders__link:focus-visible {
+  opacity: 0.8;
+}
+
+.account-orders__num {
+  font-size: 0.95rem;
+}
+
+.account-orders__status {
+  font-size: 0.8rem;
+  opacity: 0.55;
+  text-align: right;
+}
+
+.account-orders__meta,
+.account-orders__total {
+  font-size: 0.8rem;
+  opacity: 0.55;
+}
+
+.account-orders__total {
+  text-align: right;
+}
+
+.account-detail__block {
+  margin-bottom: 1.75rem;
+}
+
+.account-detail__label {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  opacity: 0.45;
+}
+
+.account-detail__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+.account-detail__row dd {
+  margin: 0;
+  text-align: right;
+}
+
+.account-detail__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.account-detail__item {
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
+.account-detail__item:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.account-detail__item-meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.55;
+}
+
+.account-detail__history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.account-detail__history-item {
+  padding: 0.65rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+}
+
+.account-detail__history-item:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.account-detail__history-time {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  opacity: 0.45;
+}
+
+.cart-success-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.cart-success-actions a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  opacity: 0.85;
+}
+
+.cart-success-actions a:hover,
+.cart-success-actions a:focus-visible {
+  opacity: 1;
+}
+
+.cart-field__hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  opacity: 0.45;
+}

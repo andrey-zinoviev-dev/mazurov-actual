@@ -4,11 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 import {
+  getServerFavoritesSnapshot,
   readFavorites,
   subscribeFavorites,
   toggleFavorite,
@@ -25,20 +25,14 @@ type FavoritesContextValue = {
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<FavoriteItem[]>([]);
-
-  useEffect(() => {
-    return subscribeFavorites(() => {
-      setItems(readFavorites());
-    });
-  }, []);
+  const items = useSyncExternalStore(
+    subscribeFavorites,
+    readFavorites,
+    getServerFavoritesSnapshot,
+  );
 
   const toggle = useCallback((item: FavoriteItem) => {
-    setItems((current) => {
-      const next = toggleFavorite(current, item);
-      writeFavorites(next);
-      return next;
-    });
+    writeFavorites(toggleFavorite(readFavorites(), item));
   }, []);
 
   const isFavorite = useCallback(

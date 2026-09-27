@@ -3,27 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useSyncExternalStore } from "react";
-import { useFavorites } from "@/components/FavoritesProvider";
-import {
-  countCartItems,
-  getServerCartSnapshot,
-  readCart,
-  subscribeCart,
-} from "@/lib/cart";
+import { ProfileMenu } from "@/components/Account/ProfileMenu";
+import { ProductSearch } from "@/components/ProductSearch/ProductSearch";
 
 /** Слот для мобильной кнопки категорий (portal из CatalogNav) */
 export const SHOP_HEADER_SUBNAV_ID = "shop-header-subnav";
 
-export function Header() {
+export type HeaderCustomer = {
+  id: number;
+  phone: string;
+} | null;
+
+export function Header({ customer = null }: { customer?: HeaderCustomer }) {
   const pathname = usePathname();
-  const { items: favorites } = useFavorites();
-  const favoritesCount = favorites.length;
-  const cart = useSyncExternalStore(subscribeCart, readCart, getServerCartSnapshot);
-  const cartCount = useMemo(() => countCartItems(cart), [cart]);
   const isHome = pathname === "/";
-  const isFavorites = pathname === "/favorites";
-  const isCart = pathname === "/cart" || pathname.startsWith("/cart/");
+  const isAccount =
+    pathname === "/account" || pathname.startsWith("/account/");
+  const isLogin = pathname === "/login";
   const isContacts = pathname === "/contacts";
 
   return (
@@ -53,37 +49,33 @@ export function Header() {
           )}
         </div>
 
-        <nav className="header-actions header-actions--desktop" aria-label="Действия">
-          <Link
-            href="/favorites"
-            className="header-action-btn"
-            aria-current={isFavorites ? "page" : undefined}
-            aria-label={
-              favoritesCount > 0
-                ? `Избранное, ${favoritesCount}`
-                : "Избранное"
-            }
-          >
-            [ избранное{favoritesCount > 0 ? ` ${favoritesCount}` : ""} ]
-          </Link>
-          <Link
-            href="/cart"
-            className="header-action-btn"
-            aria-current={isCart ? "page" : undefined}
-            aria-label={
-              cartCount > 0 ? `Корзина, ${cartCount}` : "Корзина"
-            }
-          >
-            [ корзина{cartCount > 0 ? ` ${cartCount}` : ""} ]
-          </Link>
-          <Link
-            href="/contacts"
-            className="header-action-btn"
-            aria-current={isContacts ? "page" : undefined}
-          >
-            [ контакты ]
-          </Link>
-        </nav>
+        <div className="header-top__main">
+          <ProductSearch />
+
+          <nav className="header-actions" aria-label="Аккаунт">
+            {/* Мобилка: контакты в шапке; профиль — в tab bar */}
+            <Link
+              href="/contacts"
+              className="header-action-btn header-action-btn--mobile-only"
+              aria-current={isContacts ? "page" : undefined}
+            >
+              [ контакты ]
+            </Link>
+
+            {/* Десктоп: меню профиля или вход */}
+            {customer ? (
+              <ProfileMenu isAccountPage={isAccount} />
+            ) : (
+              <Link
+                href="/login"
+                className="header-action-btn header-action-btn--desktop-only"
+                aria-current={isLogin ? "page" : undefined}
+              >
+                [ войти ]
+              </Link>
+            )}
+          </nav>
+        </div>
       </div>
 
       <div className="header-subnav" id={SHOP_HEADER_SUBNAV_ID} />

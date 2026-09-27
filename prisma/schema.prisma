@@ -44,3 +44,186 @@ model Product {
   @@index([isActive])
   @@map("products")
 }
+
+/// Заказчик аренды (аккаунт). Создаётся при заявке по нормализованному телефону.
+model Customer {
+  id        Int      @id @default(autoincrement())
+  /// E.164 без «+», для РФ: 79991234567
+  phone     String   @unique @db.VarChar(15)
+  name      String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.DateTime(0)
+
+  orders   Order[]
+  sessions CustomerSession[]
+
+  @@map("customers")
+}
+
+/// Одноразовый код входа (храним только хэш).
+model OtpChallenge {
+  id         Int       @id @default(autoincrement())
+  phone      String    @db.VarChar(15)
+  codeHash   String    @map("code_hash") @db.VarChar(64)
+  expiresAt  DateTime  @map("expires_at") @db.DateTime(0)
+  attempts   Int       @default(0)
+  consumedAt DateTime? @map("consumed_at") @db.DateTime(0)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+
+  @@index([phone, createdAt])
+  @@map("otp_challenges")
+}
+
+/// Сессия кабинета: в cookie — сырой token, в БД — sha256.
+model CustomerSession {
+  id         String   @id @default(cuid())
+  customerId Int      @map("customer_id")
+  tokenHash  String   @unique @map("token_hash") @db.VarChar(64)
+  expiresAt  DateTime @map("expires_at") @db.DateTime(0)
+  createdAt  DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  lastSeenAt DateTime @default(now()) @updatedAt @map("last_seen_at") @db.DateTime(0)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([customerId])
+  @@index([expiresAt])
+  @@map("customer_sessions")
+}
+
+/// Зеркало прод-таблицы `orders` (рентал на хостинге). Не менять без согласования с ботом.
+/// `customer_id` — аддитивное nullable-поле сайта; бот может его игнорировать.
+model Order {
+  id                   BigInt    @id @default(autoincrement())
+  orderNumber          Int       @map("order_number")
+  userId               String    @map("user_id") @db.VarChar(50)
+  userName             String?   @map("user_name") @db.VarChar(255)
+  clientName           String?   @map("client_name") @db.VarChar(255)
+  phone                String?   @db.VarChar(50)
+  email                String?   @db.VarChar(255)
+  dates                String?   @db.VarChar(100)
+  days                 Int?      @default(1)
+  total                Decimal   @db.Decimal(10, 2)
+  subtotal             Decimal?  @db.Decimal(10, 2)
+  status               String?   @default("PENDING") @db.VarChar(50)
+  statusCode           String?   @default("PENDING") @map("status_code") @db.VarChar(50)
+  hidden               Boolean?  @default(false)
+  deliveryMethod       String?   @default("pickup") @map("delivery_method") @db.VarChar(20)
+  deliveryAddress      String?   @map("delivery_address") @db.Text
+  promoCode            String?   @map("promo_code") @db.VarChar(50)
+  promoDiscountPercent Int?      @map("promo_discount_percent")
+  promoDiscountAmount  Decimal?  @map("promo_discount_amount") @db.Decimal(10, 2)
+  promoRejected        Boolean?  @default(false) @map("promo_rejected")
+  promoRejectReason    String?   @map("promo_reject_reason") @db.Text
+  rawData              String?   @map("raw_data") @db.LongText
+  customerId           Int?      @map("customer_id")
+  createdAt            DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt            DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  customer Customer?            @relation(fields: [customerId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  items    OrderItem[]
+  history  OrderStatusHistory[]
+
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([statusCode])
+  @@index([hidden])
+  @@index([customerId])
+  @@map("orders")
+}
+
+/// Позиции заказа — снимок товара на момент оформления (не live-ссылка на products).
+model OrderItem {
+  id          BigInt  @id @default(autoincrement())
+  orderId     BigInt  @map("order_id")
+  productId   Int     @map("product_id")
+  productName String  @map("product_name") @db.VarChar(500)
+  category    String? @db.VarChar(100)
+  quantity    Int     @default(1)
+  pricePerDay Decimal @map("price_per_day") @db.Decimal(10, 2)
+  daysCount   Int?    @default(1) @map("days_count")
+  totalPrice  Decimal @map("total_price") @db.Decimal(10, 2)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+/// Одна строка (id = 1): генератор `order_number`.
+model OrderCounter {
+  id         Int @id @default(1)
+  lastNumber Int @default(0) @map("last_number")
+
+  @@map("order_counter")
+}
+
+model OrderStatusHistory {
+  id        BigInt    @id @default(autoincrement())
+  orderId   BigInt    @map("order_id")
+  status    String    @db.VarChar(100)
+  comment   String?   @db.Text
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([orderId])
+  @@map("order_status_history")
+}
+
+enum PromoDiscountType {
+  percent
+  fixed
+}
+
+enum PromoUsageType {
+  one_time
+  multi
+}
+
+enum PromoOrderLimit {
+  first_only
+  any
+}
+
+/// Зеркало прод-таблицы `promo_codes` (админка / бот). Не менять без согласования.
+model PromoCode {
+  id                 Int                @id @default(autoincrement())
+  code               String             @unique @db.VarChar(50)
+  discountPercentOld Int?               @map("discount_percent_old")
+  discountType       PromoDiscountType? @default(percent) @map("discount_type")
+  discountValue      Decimal            @default(0.00) @map("discount_value") @db.Decimal(10, 2)
+  usageType          PromoUsageType?    @default(one_time) @map("usage_type")
+  orderLimit         PromoOrderLimit?   @default(first_only) @map("order_limit")
+  expiryDate         DateTime?          @map("expiry_date") @db.Date
+  maxUses            Int?               @default(0) @map("max_uses")
+  maxUsesPerUser     Int?               @default(0) @map("max_uses_per_user")
+  timesUsed          Int?               @default(0) @map("times_used")
+  isActive           Boolean?           @default(true) @map("is_active")
+  createdAt          DateTime?          @default(now()) @map("created_at") @db.Timestamp(0)
+
+  @@map("promo_codes")
+}
+
+/// История применений. Связь с промокодом — по строке `promo_code`, не FK на id.
+model PromoUsageHistory {
+  id        Int       @id @default(autoincrement())
+  promoCode String    @map("promo_code") @db.VarChar(50)
+  userId    String    @map("user_id") @db.VarChar(50)
+  orderId   BigInt?   @map("order_id")
+  usedAt    DateTime? @default(now()) @map("used_at") @db.Timestamp(0)
+
+  @@index([promoCode])
+  @@index([userId])
+  @@map("promo_usage_history")
+}
+
+/// Факт использования промокода пользователем (бот / сайт).
+model UsedPromocode {
+  id        BigInt    @id @default(autoincrement())
+  userId    String    @map("user_id") @db.VarChar(50)
+  promoCode String    @map("promo_code") @db.VarChar(50)
+  usedAt    DateTime? @default(now()) @map("used_at") @db.Timestamp(0)
+
+  @@index([userId])
+  @@map("used_promocodes")
+}

@@ -1,3 +1,5 @@
+import { normalizePhone } from "@/lib/phone";
+
 export type DeliveryMethod = "pickup" | "delivery";
 
 export type CreateOrderRequest = {
@@ -10,6 +12,31 @@ export type CreateOrderRequest = {
   deliveryMethod: DeliveryMethod;
   deliveryAddress?: string;
   promoCode?: string;
+};
+
+export type CreateOrderResult = {
+  orderId: number;
+  orderNumber: number;
+  customerId: number;
+  clientName: string;
+  /** Нормализованный телефон (7999…). */
+  phone: string;
+  clientTelegram?: string;
+  userId: string;
+  dates: string;
+  days: number;
+  items: {
+    productName: string;
+    category: string | null;
+    quantity: number;
+    pricePerDay: string;
+    daysCount: number;
+    totalPrice: string;
+  }[];
+  deliveryMethod: DeliveryMethod;
+  deliveryAddress: string | null;
+  promoCode: string | null;
+  total: string;
 };
 
 export function inclusiveDayCount(start: Date, end: Date): number {
@@ -37,6 +64,9 @@ export function parseDateOnly(value: string): Date | null {
 export function validateOrder(body: CreateOrderRequest): string | null {
   if (!body.clientName.trim()) return "Укажите имя";
   if (!body.clientPhone.trim()) return "Укажите телефон";
+  if (!normalizePhone(body.clientPhone)) {
+    return "Укажите корректный номер телефона";
+  }
 
   const start = parseDateOnly(body.startDate);
   const end = parseDateOnly(body.endDate);
