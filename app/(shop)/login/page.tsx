@@ -37,10 +37,10 @@ export default async function LoginPage({ searchParams }: Props) {
           { label: "вход" },
         ]}
       />
-      <div className="account-page__body account-page__body--centered">
-        <div className="account-page__head account-page__head--centered">
+      <div className="account-page__body">
+        {/* <div className="account-page__head">
           <h1>вход</h1>
-        </div>
+        </div> */}
         <Suspense fallback={<p className="account-page__empty">загрузка…</p>}>
           <LoginForm initialPhone={initialPhone} />
         </Suspense>

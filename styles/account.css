@@ -13,19 +13,107 @@
   max-width: 36rem;
 }
 
-.account-page--login .account-page__body--centered {
-  margin-inline: auto;
-  max-width: 22rem;
-  width: 100%;
+.account-page--login .account-page__body {
+  /* max-width: 24rem; */
 }
 
-.account-page__head--centered {
-  justify-content: center;
+.account-form--login {
+  width: 100%;
+  max-width: none;
+  gap: 1.35rem;
+  /* padding: 1.5rem; */
+  /* border: 1px solid rgba(255, 255, 255, 0.1); */
+  /* border-radius: 12px; */
+  /* background: #0a0a0a; */
 }
 
-.account-page--login .account-form {
-  margin-inline: auto;
-  width: 100%;
+.account-form--login .account-form__hint,
+.account-form--login .account-form__meta {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  opacity: 0.45;
+}
+
+.account-form--login .account-form__meta a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  opacity: 0.85;
+}
+
+.account-form--login .account-form__meta a:hover,
+.account-form--login .account-form__meta a:focus-visible {
+  opacity: 1;
+}
+
+.account-form--login .cart-field {
+  gap: 0.55rem;
+  margin-bottom: 0;
+}
+
+.account-form--login .cart-field__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.account-form--login .cart-field input[type="text"],
+.account-form--login .cart-field input[type="tel"] {
+  padding: 0.8rem 0.95rem;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  background: #141414;
+  color: #ffffff;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.account-form--login .cart-field input::placeholder {
+  color: #71717a;
+  opacity: 1;
+}
+
+.account-form--login .cart-field input:focus-visible {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: #181818;
+}
+
+.account-form--login .account-form__submit {
+  margin-top: 0.15rem;
+  padding: 0.95rem 1rem;
+  border-radius: 8px;
+  background: #e4e4e7;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-form--login .account-form__submit:hover:not(:disabled),
+.account-form--login .account-form__submit:focus-visible:not(:disabled) {
+  background: #f4f4f5;
+}
+
+.account-form--login .cart-page__text-btn {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.account-form--login .cart-page__text-btn:hover,
+.account-form--login .cart-page__text-btn:focus-visible {
+  opacity: 0.9;
+}
+
+.account-form--login .cart-page__status {
+  margin: 0;
+  font-size: 0.75rem;
 }
 
 .otp-resend {

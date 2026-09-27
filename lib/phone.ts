@@ -22,7 +22,7 @@ export function normalizePhone(input: string): string | null {
   return normalized;
 }
 
-/** E.164 для Telegram Gateway: `+79991234567`. */
+/** E.164 для Verificahub / внешних API: `+79991234567`. */
 export function toE164(normalizedOrRaw: string): string | null {
   const normalized = normalizePhone(normalizedOrRaw);
   if (!normalized) return null;

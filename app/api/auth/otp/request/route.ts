@@ -1,10 +1,22 @@
 import { findOrCreateCustomer } from "@/lib/customers";
+import { OtpError, requestLoginOtp, type OtpMethod } from "@/lib/otp";
 import { normalizePhone } from "@/lib/phone";
-import { OtpError, requestLoginOtp } from "@/lib/otp";
 
 export const dynamic = "force-dynamic";
 
-type Body = { phone?: string };
+type Body = {
+  phone?: string;
+  /** telegram_otp (default) | sms */
+  method?: string;
+};
+
+function parseMethod(value: string | undefined): OtpMethod {
+  return value === "sms" ? "sms" : "telegram_otp";
+}
+
+function statusForOtpError(code: OtpError["code"]): number {
+  return code === "rate_limit" ? 429 : 400;
+}
 
 export async function POST(request: Request) {
   let body: Body;
@@ -25,17 +37,22 @@ export async function POST(request: Request) {
     );
   }
 
+  const method = parseMethod(body.method);
+
   try {
-    // Аккаунт может появиться до первой заявки (только вход).
     await findOrCreateCustomer(phone);
-    const { retryAfterSec } = await requestLoginOtp(phone);
-    return Response.json({ success: true, retryAfterSec });
+    const result = await requestLoginOtp(phone, method);
+    return Response.json({
+      success: true,
+      retryAfterSec: result.retryAfterSec,
+      smsAfterSec: result.smsAfterSec,
+      method: result.method,
+    });
   } catch (err) {
     if (err instanceof OtpError) {
-      const status = err.code === "rate_limit" ? 429 : 400;
       return Response.json(
         { success: false, error: err.message, code: err.code },
-        { status },
+        { status: statusForOtpError(err.code) },
       );
     }
     console.error("otp request failed", err);

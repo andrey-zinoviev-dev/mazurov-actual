@@ -45,13 +45,13 @@ export function ProfileMenu({ isAccountPage }: ProfileMenuProps) {
     <div className="profile-menu" ref={rootRef}>
       <button
         type="button"
-        className="header-action-btn profile-menu__trigger"
+        className="header-action-btn header-action-btn--cta profile-menu__trigger"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((value) => !value)}
       >
-        [ профиль ]
+        профиль
       </button>
 
       {open ? (

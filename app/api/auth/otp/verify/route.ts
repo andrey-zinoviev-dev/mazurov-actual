@@ -1,12 +1,16 @@
 import { findOrCreateCustomer } from "@/lib/customers";
 import { linkOrphanOrdersToCustomer } from "@/lib/link-orders";
-import { normalizePhone } from "@/lib/phone";
 import { OtpError, verifyLoginOtp } from "@/lib/otp";
+import { normalizePhone } from "@/lib/phone";
 import { createCustomerSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
 type Body = { phone?: string; code?: string };
+
+function statusForOtpError(code: OtpError["code"]): number {
+  return code === "rate_limit" ? 429 : 400;
+}
 
 export async function POST(request: Request) {
   let body: Body;
@@ -29,7 +33,7 @@ export async function POST(request: Request) {
   }
   if (!/^\d{4,8}$/.test(code)) {
     return Response.json(
-      { success: false, error: "Введите код из Telegram" },
+      { success: false, error: "Введите код из сообщения" },
       { status: 400 },
     );
   }
@@ -47,8 +51,15 @@ export async function POST(request: Request) {
   } catch (err) {
     if (err instanceof OtpError) {
       return Response.json(
-        { success: false, error: err.message, code: err.code },
-        { status: 400 },
+        {
+          success: false,
+          error: err.message,
+          code: err.code,
+          ...(err.attemptsRemaining != null
+            ? { attemptsRemaining: err.attemptsRemaining }
+            : {}),
+        },
+        { status: statusForOtpError(err.code) },
       );
     }
     console.error("otp verify failed", err);

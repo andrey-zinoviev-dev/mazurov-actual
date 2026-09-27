@@ -68,10 +68,10 @@ export function Header({ customer = null }: { customer?: HeaderCustomer }) {
             ) : (
               <Link
                 href="/login"
-                className="header-action-btn header-action-btn--desktop-only"
+                className="header-action-btn header-action-btn--cta header-action-btn--desktop-only"
                 aria-current={isLogin ? "page" : undefined}
               >
-                [ войти ]
+                войти
               </Link>
             )}
           </nav>

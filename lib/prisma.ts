@@ -49,7 +49,6 @@ function getClient(): PrismaClient {
     cached &&
     typeof cached.order?.create === "function" &&
     typeof cached.customer?.upsert === "function" &&
-    typeof cached.otpChallenge?.create === "function" &&
     typeof cached.customerSession?.create === "function" &&
     typeof cached.promoCode?.findUnique === "function"
   ) {

@@ -9,22 +9,23 @@
   width: 100%;
   min-width: 12rem;
   max-width: 20rem;
-  padding: 0.9rem 1rem;
+  padding: 0.95rem 1rem;
   border: none;
-  background: #d4d4d4;
+  border-radius: 8px;
+  background: #e4e4e7;
   color: #000000;
   font-family: var(--font-ibm-plex-mono), monospace;
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .product-add-to-cart__cta:hover,
 .product-add-to-cart__cta:focus-visible {
-  background: #e8e8e8;
+  background: #f4f4f5;
 }
 
 .product-add-to-cart__btn {
@@ -63,8 +64,8 @@
 .product-add-to-cart--compact .product-add-to-cart__cta {
   min-width: 0;
   max-width: none;
-  padding: 0.55rem 0.7rem;
-  font-size: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.72rem;
 }
 
 .product-add-to-cart--compact .product-add-to-cart__btn {
