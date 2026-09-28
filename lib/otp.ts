@@ -1,103 +1,220 @@
 import "server-only";
 
-import { generateOtpCode, hashSecretValue, safeEqualHex } from "@/lib/auth-crypto";
-import { sendLoginOtp } from "@/lib/otp-delivery";
-import { prisma } from "@/lib/prisma";
+import { randomToken } from "@/lib/auth-crypto";
+import {
+  clearOtpPending,
+  readOtpPending,
+  writeOtpPending,
+} from "@/lib/otp-pending";
+import {
+  checkVerification,
+  startVerification,
+  VerificahubError,
+  type VerificahubMethod,
+} from "@/lib/verificahub";
 
+/** TTL сессии у Verificahub (max 600). */
 export const OTP_TTL_MS = 10 * 60 * 1000;
-export const OTP_MAX_ATTEMPTS = 5;
+/** Повтор того же канала (ещё раз Telegram / ещё раз SMS). */
 export const OTP_RESEND_COOLDOWN_MS = 60 * 1000;
-export const OTP_MAX_PER_PHONE_HOUR = 5;
+/** Через сколько показать «получить по SMS» после старта Telegram. */
+export const OTP_SMS_FALLBACK_AFTER_SEC = 20;
+export const OTP_MAX_ATTEMPTS = 5;
+
+export type OtpMethod = VerificahubMethod;
 
 export class OtpError extends Error {
   constructor(
     message: string,
     readonly code:
       | "cooldown"
-      | "rate_limit"
       | "invalid"
       | "expired"
-      | "too_many_attempts",
+      | "too_many_attempts"
+      | "rate_limit"
+      | "validation",
+    readonly attemptsRemaining?: number,
   ) {
     super(message);
     this.name = "OtpError";
   }
 }
 
-export async function requestLoginOtp(phone: string): Promise<{ retryAfterSec: number }> {
-  const sinceHour = new Date(Date.now() - 60 * 60 * 1000);
-  const recentCount = await prisma.otpChallenge.count({
-    where: { phone, createdAt: { gte: sinceHour } },
-  });
-  if (recentCount >= OTP_MAX_PER_PHONE_HOUR) {
-    throw new OtpError("Слишком много запросов кода. Попробуйте позже.", "rate_limit");
-  }
-
-  const latest = await prisma.otpChallenge.findFirst({
-    where: { phone, consumedAt: null },
-    orderBy: { createdAt: "desc" },
-    select: { createdAt: true },
-  });
-  if (latest) {
-    const elapsed = Date.now() - latest.createdAt.getTime();
-    if (elapsed < OTP_RESEND_COOLDOWN_MS) {
-      const retryAfterSec = Math.ceil((OTP_RESEND_COOLDOWN_MS - elapsed) / 1000);
+function mapStartError(err: VerificahubError): never {
+  switch (err.errorCode) {
+    case "rate_limit_exceeded":
       throw new OtpError(
-        `Повторный код можно запросить через ${retryAfterSec} с.`,
-        "cooldown",
+        "Слишком много запросов. Подождите немного.",
+        "rate_limit",
       );
+    case "validation_error":
+      throw new OtpError(
+        "Проверьте номер телефона и попробуйте снова",
+        "validation",
+      );
+    case "insufficient_balance":
+      throw new Error("Сервис подтверждения временно недоступен");
+    default:
+      throw new Error(err.message || "Не удалось отправить код");
+  }
+}
+
+function mapCheckError(
+  err: VerificahubError,
+  attemptsRemaining?: number,
+): never {
+  switch (err.errorCode) {
+    case "invalid_code":
+      throw new OtpError(
+        "Неверный код",
+        "invalid",
+        err.attemptsRemaining ?? attemptsRemaining,
+      );
+    case "not_pending":
+      throw new OtpError("Код истёк, запросите новый", "expired");
+    case "not_found":
+      throw new OtpError("Сначала запросите код", "invalid");
+    case "rate_limit_exceeded":
+      throw new OtpError(
+        "Слишком много попыток. Подождите немного.",
+        "rate_limit",
+      );
+    case "validation_error":
+      throw new OtpError("Введите корректный код", "validation");
+    default:
+      throw new Error(err.message || "Не удалось проверить код");
+  }
+}
+
+/**
+ * Старт верификации. Код создаёт и шлёт только Verificahub.
+ * request_id кладём в httpOnly cookie.
+ */
+export async function requestLoginOtp(
+  phone: string,
+  method: OtpMethod = "telegram_otp",
+): Promise<{
+  retryAfterSec: number;
+  smsAfterSec: number;
+  method: OtpMethod;
+}> {
+  const existing = await readOtpPending();
+  if (existing && existing.phone === phone) {
+    const sameChannel = existing.method === method;
+    // Cooldown только на повтор того же канала.
+    // Смена telegram → sms не ждёт минуту (иначе SMS «под конец» cooldown).
+    if (sameChannel) {
+      const elapsed = Date.now() - existing.issuedAt;
+      if (elapsed < OTP_RESEND_COOLDOWN_MS) {
+        const retryAfterSec = Math.ceil((OTP_RESEND_COOLDOWN_MS - elapsed) / 1000);
+        throw new OtpError(
+          `Повторный код можно запросить через ${retryAfterSec} с.`,
+          "cooldown",
+        );
+      }
     }
   }
 
-  const code = generateOtpCode();
-  const expiresAt = new Date(Date.now() + OTP_TTL_MS);
+  const provider = (process.env.OTP_PROVIDER ?? "verificahub").trim().toLowerCase();
+  const expiresAt = Date.now() + OTP_TTL_MS;
+  let requestId: string;
 
-  await prisma.otpChallenge.create({
-    data: {
-      phone,
-      codeHash: hashSecretValue(code),
-      expiresAt,
-    },
-  });
+  if (provider === "stub") {
+    requestId = `stub-${randomToken(12)}`;
+    console.info(
+      `[otp:stub] method=${method} to=${phone} request_id=${requestId} (код не генерируем — в stub check примите 000000)`,
+    );
+  } else {
+    try {
+      const started = await startVerification({
+        phone,
+        method,
+        expirySeconds: Math.floor(OTP_TTL_MS / 1000),
+      });
+      requestId = started.requestId;
+    } catch (err) {
+      if (err instanceof VerificahubError) mapStartError(err);
+      throw err;
+    }
+  }
 
-  await sendLoginOtp({
+  await writeOtpPending({
     phone,
-    code,
-    ttlSec: Math.floor(OTP_TTL_MS / 1000),
+    requestId,
+    method,
+    issuedAt: Date.now(),
+    expiresAt,
+    attempts: 0,
   });
 
-  return { retryAfterSec: Math.ceil(OTP_RESEND_COOLDOWN_MS / 1000) };
+  return {
+    retryAfterSec: Math.ceil(OTP_RESEND_COOLDOWN_MS / 1000),
+    smsAfterSec: OTP_SMS_FALLBACK_AFTER_SEC,
+    method,
+  };
 }
 
+/** Проверка кода у Verificahub по request_id из cookie. */
 export async function verifyLoginOtp(phone: string, code: string): Promise<void> {
-  const challenge = await prisma.otpChallenge.findFirst({
-    where: { phone, consumedAt: null },
-    orderBy: { createdAt: "desc" },
-  });
-
-  if (!challenge) {
+  const pending = await readOtpPending();
+  if (!pending || pending.phone !== phone) {
     throw new OtpError("Сначала запросите код", "invalid");
   }
 
-  if (challenge.expiresAt.getTime() < Date.now()) {
+  if (pending.expiresAt < Date.now()) {
+    await clearOtpPending();
     throw new OtpError("Код истёк, запросите новый", "expired");
   }
 
-  if (challenge.attempts >= OTP_MAX_ATTEMPTS) {
-    throw new OtpError("Слишком много попыток, запросите новый код", "too_many_attempts");
+  if (pending.attempts >= OTP_MAX_ATTEMPTS) {
+    throw new OtpError(
+      "Слишком много попыток, запросите новый код",
+      "too_many_attempts",
+    );
   }
 
-  const ok = safeEqualHex(challenge.codeHash, hashSecretValue(code.trim()));
-  if (!ok) {
-    await prisma.otpChallenge.update({
-      where: { id: challenge.id },
-      data: { attempts: { increment: 1 } },
+  const trimmed = code.trim();
+  const provider = (process.env.OTP_PROVIDER ?? "verificahub").trim().toLowerCase();
+
+  if (provider === "stub" || pending.requestId.startsWith("stub-")) {
+    const ok = trimmed === "000000";
+    if (!ok) {
+      await writeOtpPending({ ...pending, attempts: pending.attempts + 1 });
+      throw new OtpError("Неверный код", "invalid", OTP_MAX_ATTEMPTS - pending.attempts - 1);
+    }
+    await clearOtpPending();
+    return;
+  }
+
+  try {
+    const result = await checkVerification({
+      requestId: pending.requestId,
+      code: trimmed,
     });
-    throw new OtpError("Неверный код", "invalid");
-  }
 
-  await prisma.otpChallenge.update({
-    where: { id: challenge.id },
-    data: { consumedAt: new Date() },
-  });
+    if (result.status !== "verified") {
+      await writeOtpPending({ ...pending, attempts: pending.attempts + 1 });
+      throw new OtpError("Неверный код", "invalid");
+    }
+
+    await clearOtpPending();
+  } catch (err) {
+    if (err instanceof OtpError) throw err;
+
+    if (err instanceof VerificahubError) {
+      const nextAttempts = pending.attempts + 1;
+      await writeOtpPending({ ...pending, attempts: nextAttempts });
+
+      if (nextAttempts >= OTP_MAX_ATTEMPTS) {
+        throw new OtpError(
+          "Слишком много попыток, запросите новый код",
+          "too_many_attempts",
+        );
+      }
+
+      mapCheckError(err, OTP_MAX_ATTEMPTS - nextAttempts);
+    }
+
+    throw err;
+  }
 }

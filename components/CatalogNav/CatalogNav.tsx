@@ -12,7 +12,6 @@ import {
   type MouseEvent,
 } from "react";
 import { createPortal } from "react-dom";
-import { useFavorites } from "@/components/FavoritesProvider";
 import {
   SHOP_HEADER_SUBNAV_ID,
 } from "@/components/Header";
@@ -22,6 +21,11 @@ import {
   readCart,
   subscribeCart,
 } from "@/lib/cart";
+import {
+  getServerFavoritesSnapshot,
+  readFavorites,
+  subscribeFavorites,
+} from "@/lib/favorites";
 import "./CatalogNav.css";
 
 export type CatalogNavItem = {
@@ -197,7 +201,13 @@ function SidebarNav({
   const [prevPathname, setPrevPathname] = useState(pathname);
   const panelId = useId();
 
-  const { items: favorites } = useFavorites();
+  // Не через FavoritesProvider: CatalogNav в Suspense гидрируется позже,
+  // и контекст к тому моменту уже с localStorage → mismatch счётчика.
+  const favorites = useSyncExternalStore(
+    subscribeFavorites,
+    readFavorites,
+    getServerFavoritesSnapshot,
+  );
   const favoritesCount = favorites.length;
   const cart = useSyncExternalStore(
     subscribeCart,

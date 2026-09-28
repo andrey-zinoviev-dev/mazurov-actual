@@ -109,6 +109,27 @@
   opacity: 1;
 }
 
+.header-action-btn--cta {
+  padding: 0.7rem 0.95rem;
+  border-radius: 8px;
+  background: #e4e4e7;
+  color: #000000;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 1;
+  transition: background 0.15s ease;
+}
+
+.header-action-btn--cta:hover,
+.header-action-btn--cta:focus-visible,
+.header-action-btn--cta[aria-current="page"],
+.header-action-btn--cta[aria-expanded="true"] {
+  background: #f4f4f5;
+  opacity: 1;
+}
+
 /* Контакты в хедере — только мобилка; профиль/вход — только десктоп */
 @media (max-width: 899px) {
   .header-action-btn--desktop-only {

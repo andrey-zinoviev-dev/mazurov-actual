@@ -70,6 +70,9 @@ export function subscribeFavorites(onChange: () => void): () => void {
     if (event.key === STORAGE_KEY) onChange();
   };
 
+  // Как у корзины: сразу дернуть подписчика, чтобы после серверного
+  // снимка подтянуть localStorage.
+  onChange();
   window.addEventListener("storage", onStorage);
   window.addEventListener(FAVORITES_CHANGE_EVENT, onChange);
 
