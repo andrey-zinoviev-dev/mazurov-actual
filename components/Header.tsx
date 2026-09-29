@@ -20,7 +20,6 @@ export function Header({ customer = null }: { customer?: HeaderCustomer }) {
   const isAccount =
     pathname === "/account" || pathname.startsWith("/account/");
   const isLogin = pathname === "/login";
-  const isContacts = pathname === "/contacts";
 
   return (
     <header className="header">
@@ -53,16 +52,7 @@ export function Header({ customer = null }: { customer?: HeaderCustomer }) {
           <ProductSearch />
 
           <nav className="header-actions" aria-label="Аккаунт">
-            {/* Мобилка: контакты в шапке; профиль — в tab bar */}
-            <Link
-              href="/contacts"
-              className="header-action-btn header-action-btn--mobile-only"
-              aria-current={isContacts ? "page" : undefined}
-            >
-              [ контакты ]
-            </Link>
-
-            {/* Десктоп: меню профиля или вход */}
+            {/* Десктоп: меню профиля или вход; на мобилке — в tab bar */}
             {customer ? (
               <ProfileMenu isAccountPage={isAccount} />
             ) : (

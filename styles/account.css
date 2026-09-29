@@ -7,6 +7,32 @@
   .account-page {
     max-width: 28rem;
   }
+
+  /* Логин: на всю ширину экрана и по вертикальному центру */
+  .account-page--login {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+    /* header 72 + body padding 16*2 + tab bar ~72 */
+    min-height: calc(
+      100dvh - var(--shop-header-height) - 32px -
+        72px - env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  .account-page--login .account-page__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    max-width: none;
+  }
+
+  .account-page--login .account-form--login {
+    width: 100%;
+  }
 }
 
 .account-page__body {

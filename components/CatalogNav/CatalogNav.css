@@ -194,6 +194,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-right: 0.25rem;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
 }
@@ -232,6 +233,7 @@
     max-height: calc(100vh - var(--shop-header-height) - 32px);
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-gutter: stable;
     --nav-scrollbar: transparent;
     transition: --nav-scrollbar 0.2s ease;
     scrollbar-width: thin;

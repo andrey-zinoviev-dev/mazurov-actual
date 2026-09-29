@@ -130,7 +130,7 @@
   opacity: 1;
 }
 
-/* Контакты в хедере — только мобилка; профиль/вход — только десктоп */
+/* Профиль/вход в хедере — только десктоп (на мобилке — в tab bar) */
 @media (max-width: 899px) {
   .header-action-btn--desktop-only {
     display: none;
