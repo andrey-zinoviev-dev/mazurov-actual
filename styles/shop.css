@@ -35,7 +35,7 @@
 }
 
 .header-subnav:not(:empty) {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 @media (min-width: 900px) {

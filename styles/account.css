@@ -166,6 +166,13 @@
   margin-bottom: 1.5rem;
 }
 
+/* На десктопе выход уже есть в хедере (ProfileMenu) */
+@media (min-width: 900px) {
+  .account-page__head {
+    display: none;
+  }
+}
+
 .account-page__head h1 {
   margin: 0;
   font-size: 0.85rem;

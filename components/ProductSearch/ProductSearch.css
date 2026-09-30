@@ -300,44 +300,36 @@
 
 @media (max-width: 899px) {
   .product-search {
-    margin: 0 0 0 12px;
+    flex: 0 0 auto;
+    margin: 0;
     max-width: none;
   }
 
-  /* В шапке — кнопка-триггер вместо инпута */
+  /* В шапке — иконка; combobox открывается в sheet */
   .product-search__shell {
     display: none;
   }
 
   .product-search__trigger {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    width: 100%;
-    box-sizing: border-box;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     margin: 0;
-    padding: 0.8rem 0.95rem;
-    border: 1px solid #2a2a2a;
+    padding: 0;
+    border: none;
     border-radius: 8px;
-    background: #141414;
+    background: transparent;
     color: #ffffff;
-    font-family: var(--font-ibm-plex-mono), monospace;
-    /* Тот же размер, что у инпута в шите — без скачка при открытии */
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.2;
-    letter-spacing: 0.02em;
-    text-align: left;
-    text-transform: lowercase;
+    opacity: 0.72;
     cursor: pointer;
+    transition: opacity 0.15s ease;
   }
 
-  .product-search__trigger-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .product-search__trigger-text--placeholder {
-    color: #71717a;
+  .product-search__trigger:hover,
+  .product-search__trigger:focus-visible,
+  .product-search__trigger[aria-expanded="true"] {
+    opacity: 1;
   }
 }

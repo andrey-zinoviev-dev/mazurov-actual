@@ -388,16 +388,10 @@ export function ProductSearch() {
         className="product-search__trigger"
         onClick={() => setSheetOpen(true)}
         aria-label="Открыть поиск"
+        aria-haspopup="dialog"
+        aria-expanded={sheetOpen}
       >
-        <span
-          className={
-            query.trim()
-              ? "product-search__trigger-text"
-              : "product-search__trigger-text product-search__trigger-text--placeholder"
-          }
-        >
-          {query.trim() || "найти…"}
-        </span>
+        <SearchIcon />
       </button>
 
       {!sheetActive ? (
@@ -409,6 +403,21 @@ export function ProductSearch() {
 
       {sheetPortal}
     </div>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.5 4.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm8 14-3.2-3.2"
+      />
+    </svg>
   );
 }
 
