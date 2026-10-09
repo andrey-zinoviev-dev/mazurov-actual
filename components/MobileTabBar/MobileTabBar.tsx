@@ -18,6 +18,7 @@ export function MobileTabBar({
 
   const isFavorites = pathname === "/favorites";
   const isCart = pathname === "/cart" || pathname.startsWith("/cart/");
+  const isContacts = pathname === "/contacts";
   const isAccount =
     pathname === "/account" ||
     pathname.startsWith("/account/") ||
@@ -25,6 +26,7 @@ export function MobileTabBar({
   const isCatalog =
     !isFavorites &&
     !isCart &&
+    !isContacts &&
     !isAccount &&
     (pathname === "/" || pathname.startsWith("/category/"));
 
@@ -73,6 +75,19 @@ export function MobileTabBar({
       </Link>
 
       <Link
+        href="/contacts"
+        className={
+          isContacts
+            ? "mobile-tab-bar__item mobile-tab-bar__item--active"
+            : "mobile-tab-bar__item"
+        }
+        aria-current={isContacts ? "page" : undefined}
+      >
+        <ContactsIcon />
+        <span>контакты</span>
+      </Link>
+
+      <Link
         href={profileHref}
         className={
           isAccount
@@ -90,7 +105,7 @@ export function MobileTabBar({
 
 function CatalogIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
       <path
         fill="none"
         stroke="currentColor"
@@ -103,7 +118,7 @@ function CatalogIcon() {
 
 function HeartIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
       <path
         fill="none"
         stroke="currentColor"
@@ -118,7 +133,7 @@ function HeartIcon() {
 
 function CartIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
       <path
         fill="none"
         stroke="currentColor"
@@ -131,9 +146,24 @@ function CartIcon() {
   );
 }
 
+function ContactsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.2 4.5h7.6c.9 0 1.7.8 1.7 1.7v11.6c0 .9-.8 1.7-1.7 1.7H8.2c-.9 0-1.7-.8-1.7-1.7V6.2c0-.9.8-1.7 1.7-1.7ZM12 16.8h.01"
+      />
+    </svg>
+  );
+}
+
 function ProfileIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
       <path
         fill="none"
         stroke="currentColor"

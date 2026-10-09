@@ -2,18 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { CatalogShelfList } from "@/components/CatalogShelfList/CatalogShelfList";
-import { getShelfBySlug, getShelfSlugs } from "@/lib/catalog";
+import { getShelfBySlug } from "@/lib/catalog";
 
 type CategoryPageProps = {
   params: Promise<{ slug: string }>;
 };
-
-export async function generateStaticParams() {
-  const slugs = await getShelfSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
-
-export const dynamicParams = false;
 
 export async function generateMetadata({
   params,

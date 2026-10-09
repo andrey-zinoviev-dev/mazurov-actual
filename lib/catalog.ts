@@ -94,21 +94,6 @@ export const getAllNavRoots = cache(
   },
 );
 
-/** Активные полки для `generateStaticParams` */
-export const getShelfSlugs = cache(async (): Promise<string[]> => {
-  const shelves = await prisma.category.findMany({
-    where: {
-      parentId: { not: null },
-      isActive: true,
-      products: { some: { isActive: true } },
-    },
-    select: { slug: true },
-    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-  });
-
-  return shelves.map((shelf) => shelf.slug);
-});
-
 /**
  * Одна полка по slug из URL (`parentId != null`).
  * Если slug не уникален среди полок — бросает ошибку (нужна правка данных).
