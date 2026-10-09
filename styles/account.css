@@ -14,7 +14,7 @@
 }
 
 .account-page--login .account-page__body {
-  /* max-width: 24rem; */
+  max-width: 24rem;
 }
 
 .account-form--login {
