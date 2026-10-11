@@ -7,7 +7,12 @@ import { categoryPath } from "@/lib/catalog-path";
 import { productImageUrl } from "@/lib/product-image";
 import { prisma } from "@/lib/prisma";
 
-export { categoryPath, productPath, shelfSectionId } from "@/lib/catalog-path";
+export {
+  categoryPath,
+  parseProductParam,
+  productPath,
+  shelfSectionId,
+} from "@/lib/catalog-path";
 export { productImageUrl } from "@/lib/product-image";
 export type { CatalogNavRoot, CatalogNavShelf } from "@/lib/catalog-path";
 
@@ -119,7 +124,7 @@ export const getShelfBySlug = cache(
   },
 );
 
-/** Активный товар по id из URL `/product/[id]`. */
+/** Активный товар по id (сегмент URL `/product/{slug}-{id}`). */
 export const getProductById = cache(async (id: number) => {
   if (!Number.isInteger(id) || id <= 0) {
     return undefined;
@@ -138,6 +143,7 @@ export const getProductById = cache(async (id: number) => {
 /** Лёгкий хит для header-поиска / combobox */
 export type ProductSearchHit = {
   id: number;
+  slug: string | null;
   name: string;
   price: number;
   imageSrc: string;
@@ -167,11 +173,12 @@ export async function searchProducts(
     },
     orderBy: [{ name: "asc" }],
     take,
-    select: { id: true, name: true, price: true, image: true },
+    select: { id: true, slug: true, name: true, price: true, image: true },
   });
 
   return products.map((product) => ({
     id: product.id,
+    slug: product.slug,
     name: product.name,
     price: Number(product.price),
     imageSrc: productImageUrl(product),

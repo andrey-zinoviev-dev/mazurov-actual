@@ -9,6 +9,7 @@ import "./ProductCard.css";
 
 export type ProductCardProps = {
   id: number;
+  slug?: string | null;
   name: string;
   /** Цена аренды за день (руб.) */
   price: number;
@@ -19,7 +20,13 @@ function formatPricePerDay(price: number): string {
   return `${price.toLocaleString("ru-RU")} ₽/день`;
 }
 
-export function ProductCard({ id, name, price, imageSrc }: ProductCardProps) {
+export function ProductCard({
+  id,
+  slug,
+  name,
+  price,
+  imageSrc,
+}: ProductCardProps) {
   const { isFavorite, toggle } = useFavorites();
   const favorited = isFavorite(id);
 
@@ -27,7 +34,7 @@ export function ProductCard({ id, name, price, imageSrc }: ProductCardProps) {
     <article className="product-card">
       {/* Растянутая ссылка на всю карточку; кнопки выше по z-index. */}
       <Link
-        href={productPath(id)}
+        href={productPath({ id, slug })}
         className="product-card__link"
         aria-label={name}
       />
@@ -41,7 +48,7 @@ export function ProductCard({ id, name, price, imageSrc }: ProductCardProps) {
             favorited ? "Убрать из избранного" : "Добавить в избранное"
           }
           aria-pressed={favorited}
-          onClick={() => toggle({ id, name, price, imageSrc })}
+          onClick={() => toggle({ id, slug, name, price, imageSrc })}
         >
           <HeartIcon filled={favorited} />
         </button>

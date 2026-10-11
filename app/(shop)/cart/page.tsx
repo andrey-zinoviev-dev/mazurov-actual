@@ -4,7 +4,8 @@ import { CartFlow } from "@/components/Cart/CartFlow";
 import "./cart-page.css";
 
 export const metadata: Metadata = {
-  title: "Корзина — Mazurov Rental",
+  title: "Корзина",
+  robots: { index: false, follow: false },
 };
 
 export default function CartPage() {

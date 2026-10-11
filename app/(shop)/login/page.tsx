@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+// import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { LoginForm } from "@/components/Account/LoginForm";
+import { PageHeading } from "@/components/PageHeading/PageHeading";
 import { getSessionCustomer } from "@/lib/session";
 import "@/app/(shop)/cart/cart-page.css";
 import "@/styles/account.css";
 
 export const metadata: Metadata = {
-  title: "Вход — Mazurov Rental",
+  title: "Вход",
+  robots: { index: false, follow: false },
 };
 
 type Props = {
@@ -31,16 +33,14 @@ export default async function LoginPage({ searchParams }: Props) {
 
   return (
     <section className="account-page account-page--login page-split">
-      <Breadcrumbs
+      {/* <Breadcrumbs
         items={[
           { label: "главная", href: "/" },
           { label: "вход" },
         ]}
-      />
+      /> */}
+      <PageHeading title="Вход" lead="Вход в личный кабинет по номеру телефона" />
       <div className="account-page__body">
-        {/* <div className="account-page__head">
-          <h1>вход</h1>
-        </div> */}
         <Suspense fallback={<p className="account-page__empty">загрузка…</p>}>
           <LoginForm initialPhone={initialPhone} />
         </Suspense>

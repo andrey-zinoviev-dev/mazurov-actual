@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+// import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { LogoutButton } from "@/components/Account/LogoutButton";
+import { PageHeading } from "@/components/PageHeading/PageHeading";
 import { listCustomerOrders } from "@/lib/account-orders";
 import { formatPhoneDisplay } from "@/lib/phone";
 import { getSessionCustomer } from "@/lib/session";
@@ -10,7 +11,8 @@ import "@/app/(shop)/cart/cart-page.css";
 import "@/styles/account.css";
 
 export const metadata: Metadata = {
-  title: "Мои заказы — Mazurov Rental",
+  title: "Мои заказы",
+  robots: { index: false, follow: false },
 };
 
 export default async function AccountPage() {
@@ -23,15 +25,15 @@ export default async function AccountPage() {
 
   return (
     <section className="account-page page-split">
-      <Breadcrumbs
+      {/* <Breadcrumbs
         items={[
           { label: "главная", href: "/" },
           { label: "мои заказы" },
         ]}
-      />
+      /> */}
+      <PageHeading title="Мои заказы" lead="История заявок на аренду" />
       <div className="account-page__body">
         <div className="account-page__head">
-          {/* <h1>мои заказы</h1> */}
           <LogoutButton variant="danger" />
         </div>
 

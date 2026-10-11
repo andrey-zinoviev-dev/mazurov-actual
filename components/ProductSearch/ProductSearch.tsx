@@ -25,6 +25,7 @@ import "./ProductSearch.css";
 
 export type ProductSearchHit = {
   id: number;
+  slug: string | null;
   name: string;
   price: number;
   imageSrc: string;
@@ -194,7 +195,7 @@ export function ProductSearch() {
 
   function openHit(hit: ProductSearchHit) {
     resetSearch();
-    router.push(productPath(hit.id));
+    router.push(productPath(hit));
   }
 
   function onSubmit(event: FormEvent) {
@@ -317,7 +318,7 @@ export function ProductSearch() {
                   onMouseEnter={() => setActiveIndex(index)}
                 >
                   <Link
-                    href={productPath(hit.id)}
+                    href={productPath(hit)}
                     className="product-search__link"
                     tabIndex={-1}
                     onClick={resetSearch}

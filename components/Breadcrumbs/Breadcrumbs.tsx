@@ -11,7 +11,10 @@ type BreadcrumbsProps = {
   items: BreadcrumbItem[];
 };
 
-/** Путь страницы в роли h1: «каталог/камеры», «главная/корзина». */
+/**
+ * Путь страницы в роли h1: «каталог/камеры», «главная/корзина».
+ * Временно не используется — смотрим PageHeading (h1 + подпись) на страницах.
+ */
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
   if (items.length === 0) return null;
 

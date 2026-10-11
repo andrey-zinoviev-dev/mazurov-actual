@@ -21,6 +21,7 @@ export function FavoritesList() {
         <li key={item.id}>
           <ProductCard
             id={item.id}
+            slug={item.slug}
             name={item.name}
             price={item.price}
             imageSrc={item.imageSrc}

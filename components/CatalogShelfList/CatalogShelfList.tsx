@@ -33,6 +33,7 @@ export function CatalogShelfList({
               <li key={product.id}>
                 <ProductCard
                   id={product.id}
+                  slug={product.slug}
                   name={product.name}
                   price={Number(product.price)}
                   imageSrc={productImageUrl(product)}

@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useSyncExternalStore, useState } from "react";
-import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+// import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+import { PageHeading } from "@/components/PageHeading/PageHeading";
 import {
   clearCart,
   getServerCartSnapshot,
@@ -240,12 +241,13 @@ export function CartFlow() {
 
     return (
       <section className="cart-page page-split">
-        <Breadcrumbs
+        {/* <Breadcrumbs
           items={[
             { label: "главная", href: "/" },
             { label: "корзина" },
           ]}
-        />
+        /> */}
+        <PageHeading title="Корзина" lead="Заявка отправлена" />
         <div className="cart-page__body">
           <p className="cart-page__status">{message}</p>
           <div className="cart-success-actions">
@@ -259,11 +261,19 @@ export function CartFlow() {
 
   return (
     <section className="cart-page page-split">
-      <Breadcrumbs
+      {/* <Breadcrumbs
         items={[
           { label: "главная", href: "/" },
           { label: `корзина (${itemCount})` },
         ]}
+      /> */}
+      <PageHeading
+        title="Корзина"
+        lead={
+          itemCount > 0
+            ? `${itemCount} поз. · оформите заявку на аренду`
+            : "Пока пусто — добавьте оборудование из каталога"
+        }
       />
 
       <div className="cart-page__body">

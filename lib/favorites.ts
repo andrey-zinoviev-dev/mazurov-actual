@@ -1,5 +1,6 @@
 export type FavoriteItem = {
   id: number;
+  slug?: string | null;
   name: string;
   price: number;
   imageSrc: string;
@@ -96,8 +97,14 @@ export function toggleFavorite(
 function isFavoriteItem(value: unknown): value is FavoriteItem {
   if (typeof value !== "object" || value === null) return false;
   const item = value as FavoriteItem;
+  const slugOk =
+    item.slug === undefined ||
+    item.slug === null ||
+    typeof item.slug === "string";
+
   return (
     typeof item.id === "number" &&
+    slugOk &&
     typeof item.name === "string" &&
     typeof item.price === "number" &&
     typeof item.imageSrc === "string"

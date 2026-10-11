@@ -1,27 +1,48 @@
 import type { Metadata } from "next";
-import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+// import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd/JsonLd";
+import { PageHeading } from "@/components/PageHeading/PageHeading";
+import {
+  breadcrumbListJsonLd,
+  contactsBreadcrumbs,
+} from "@/lib/seo-jsonld";
+import { SITE } from "@/lib/site";
 import "./contacts-page.css";
 
-const PHONE_HREF = "tel:+79773016613";
-const PHONE_LABEL = "+7 977 301-66-13";
-const PICKUP_ADDRESS = "Москва, ул. Павла Андреева, 23с10";
-const PICKUP_COORDS = { lon: 37.6216427, lat: 55.7206617 };
+const PHONE_HREF = `tel:${SITE.phoneE164}`;
 const YANDEX_MAP_SRC =
-  `https://yandex.ru/map-widget/v1/?ll=${PICKUP_COORDS.lon}%2C${PICKUP_COORDS.lat}` +
-  `&z=17&pt=${PICKUP_COORDS.lon}%2C${PICKUP_COORDS.lat}%2Cpm2rdm`;
+  `https://yandex.ru/map-widget/v1/?ll=${SITE.pickupCoords.lon}%2C${SITE.pickupCoords.lat}` +
+  `&z=17&pt=${SITE.pickupCoords.lon}%2C${SITE.pickupCoords.lat}%2Cpm2rdm`;
+
+const contactsTitle = "Контакты";
+const contactsDescription =
+  "Контакты Mazurov Rental: телефон и адрес самовывоза кинооборудования в Москве.";
 
 export const metadata: Metadata = {
-  title: "Контакты — Mazurov Rental",
+  title: contactsTitle,
+  description: contactsDescription,
+  alternates: { canonical: "/contacts" },
+  openGraph: {
+    title: `${contactsTitle} — ${SITE.name}`,
+    description: contactsDescription,
+    url: "/contacts",
+    images: [{ url: SITE.defaultOgImagePath }],
+  },
 };
 
 export default function ContactsPage() {
   return (
     <section className="contacts-page page-split">
-      <Breadcrumbs
+      <JsonLd data={breadcrumbListJsonLd(contactsBreadcrumbs())} />
+      {/* <Breadcrumbs
         items={[
           { label: "главная", href: "/" },
           { label: "контакты" },
         ]}
+      /> */}
+      <PageHeading
+        title="Контакты"
+        lead="Телефон и адрес самовывоза кинооборудования в Москве"
       />
 
       <div className="contacts-page__content">
@@ -29,13 +50,13 @@ export default function ContactsPage() {
           <div className="contacts-page__block">
             <h2 className="contacts-page__label">телефон</h2>
             <a className="contacts-page__phone" href={PHONE_HREF}>
-              {PHONE_LABEL}
+              {SITE.phoneLabel}
             </a>
           </div>
 
           <div className="contacts-page__block">
             <h2 className="contacts-page__label">адрес самовывоза</h2>
-            <p className="contacts-page__address">{PICKUP_ADDRESS}</p>
+            <p className="contacts-page__address">{SITE.pickupAddress}</p>
           </div>
         </div>
 

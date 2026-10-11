@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+// import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+import { PageHeading } from "@/components/PageHeading/PageHeading";
 import { getCustomerOrder } from "@/lib/account-orders";
 import { getSessionCustomer } from "@/lib/session";
 import "@/app/(shop)/cart/cart-page.css";
@@ -14,7 +15,8 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   return {
-    title: `Заявка ${id} — Mazurov Rental`,
+    title: `Заявка ${id}`,
+    robots: { index: false, follow: false },
   };
 }
 
@@ -41,17 +43,20 @@ export default async function AccountOrderPage({ params }: Props) {
 
   return (
     <section className="account-page page-split">
-      <Breadcrumbs
+      {/* <Breadcrumbs
         items={[
           { label: "главная", href: "/" },
           { label: "мои заказы", href: "/account" },
           { label: `№${order.orderNumber}` },
         ]}
+      /> */}
+      <PageHeading
+        title={`Заявка №${order.orderNumber}`}
+        lead={order.statusLabel}
       />
 
       <div className="account-page__body">
         <div className="account-page__head">
-          <h1>заявка №{order.orderNumber}</h1>
           <Link href="/account" className="cart-page__text-btn">
             к списку
           </Link>
