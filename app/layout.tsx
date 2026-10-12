@@ -32,10 +32,7 @@ export const metadata: Metadata = {
     template: `%s — ${SITE.name}`,
   },
   description: SITE.defaultDescription,
-  icons: {
-    icon: SITE.logoPath,
-    apple: SITE.logoPath,
-  },
+  // Favicon / apple-touch: app/icon.png + app/apple-icon.png (App Router file convention)
   openGraph: {
     type: "website",
     locale: SITE.locale,

@@ -117,25 +117,38 @@ function CatalogTree({
   id?: string;
 }) {
   const allActive = pathname === "/" || pathname === allHref;
-  const [openRootSlug, setOpenRootSlug] = useState<string | null>(() =>
-    isCatalogBrowsePath(pathname)
-      ? findActiveRootSlug(roots, pathname)
-      : null,
+  // Первая загрузка — всё свёрнуто; направления открываются независимо друг от друга.
+  const [openRootSlugs, setOpenRootSlugs] = useState<ReadonlySet<string>>(
+    () => new Set(),
   );
   const [prevPathname, setPrevPathname] = useState(pathname);
 
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
-    setOpenRootSlug(
-      isCatalogBrowsePath(pathname)
-        ? findActiveRootSlug(roots, pathname)
-        : null,
-    );
+    // При переходе на полку — дооткрыть её раздел, остальные не трогаем.
+    if (pathname.startsWith("/category/")) {
+      const active = findActiveRootSlug(roots, pathname);
+      if (active) {
+        setOpenRootSlugs((current) => {
+          if (current.has(active)) return current;
+          const next = new Set(current);
+          next.add(active);
+          return next;
+        });
+      }
+    }
   }
 
   function toggleRoot(slug: string) {
-    setOpenRootSlug((current) => (current === slug ? null : slug));
+    setOpenRootSlugs((current) => {
+      const next = new Set(current);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
   }
+
+  const activeRootSlug = findActiveRootSlug(roots, pathname);
 
   return (
     <ul id={id} className={className}>
@@ -145,14 +158,15 @@ function CatalogTree({
         </Link>
       </li>
       {roots.map((root) => {
-        const isOpen = openRootSlug === root.slug;
+        const isOpen = openRootSlugs.has(root.slug);
+        const isActiveRoot = activeRootSlug === root.slug;
         const panelId = `${idPrefix}-${root.slug}`;
 
         return (
           <li key={root.slug} className="catalog-nav__root">
             <button
               type="button"
-              className={toggleClass(isOpen)}
+              className={toggleClass(isOpen, isActiveRoot)}
               aria-expanded={isOpen}
               aria-controls={panelId}
               onClick={() => toggleRoot(root.slug)}
@@ -172,7 +186,11 @@ function CatalogTree({
                 const active = pathname === shelf.href;
                 return (
                   <li key={`${shelf.href}:${shelf.slug}`}>
-                    <Link href={shelf.href} className={linkClass(active)}>
+                    <Link
+                      href={shelf.href}
+                      className={linkClass(active)}
+                      aria-current={active ? "page" : undefined}
+                    >
                       {shelf.name}
                     </Link>
                   </li>
@@ -197,7 +215,8 @@ function SidebarNav({
   pathname: string;
 }) {
   const browseCatalog = isCatalogBrowsePath(pathname);
-  const [catalogOpen, setCatalogOpen] = useState(browseCatalog);
+  // Первая загрузка — свёрнут; открывается при навигации на /category/...
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
   const panelId = useId();
 
@@ -218,7 +237,7 @@ function SidebarNav({
 
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
-    setCatalogOpen(isCatalogBrowsePath(pathname));
+    setCatalogOpen(pathname.startsWith("/category/"));
   }
 
   const isFavorites = pathname === "/favorites";
@@ -241,7 +260,7 @@ function SidebarNav({
           </span>
         </button>
         {/* Всегда в DOM: полки каталога доступны краулерам вне зависимости от аккордеона */}
-        <div hidden={!catalogOpen}>
+        <div className="catalog-nav__catalog-panel" hidden={!catalogOpen}>
           <CatalogTree
             id={panelId}
             allHref={allHref}
