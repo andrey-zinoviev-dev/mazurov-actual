@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, getSiteUrl } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,5 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       disallow: ["/cart", "/favorites", "/login", "/account", "/api/"],
     },
     sitemap: absoluteUrl("/sitemap.xml"),
+    host: getSiteUrl().replace(/^https?:\/\//, ""),
   };
 }

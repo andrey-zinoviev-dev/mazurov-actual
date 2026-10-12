@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd/JsonLd";
 import { PageHeading } from "@/components/PageHeading/PageHeading";
 import {
@@ -28,18 +28,24 @@ export const metadata: Metadata = {
     url: "/contacts",
     images: [{ url: SITE.defaultOgImagePath }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${contactsTitle} — ${SITE.name}`,
+    description: contactsDescription,
+    images: [SITE.defaultOgImagePath],
+  },
 };
 
 export default function ContactsPage() {
   return (
     <section className="contacts-page page-split">
       <JsonLd data={breadcrumbListJsonLd(contactsBreadcrumbs())} />
-      {/* <Breadcrumbs
+      <Breadcrumbs
         items={[
           { label: "главная", href: "/" },
           { label: "контакты" },
         ]}
-      /> */}
+      />
       <PageHeading
         title="Контакты"
         lead="Телефон и адрес самовывоза кинооборудования в Москве"

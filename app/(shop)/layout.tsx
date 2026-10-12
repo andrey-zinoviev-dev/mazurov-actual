@@ -3,6 +3,7 @@ import { CatalogNav } from "@/components/CatalogNav/CatalogNav";
 import { FavoritesProvider } from "@/components/FavoritesProvider";
 import { Header } from "@/components/Header";
 import { MobileTabBar } from "@/components/MobileTabBar/MobileTabBar";
+import { ShopFooter } from "@/components/ShopFooter/ShopFooter";
 import { getAllNavRoots } from "@/lib/catalog";
 import { getSessionCustomer } from "@/lib/session";
 import "@/components/CatalogNav/CatalogNav.css";
@@ -41,6 +42,7 @@ export default async function ShopLayout({
           <div className="catalog-layout__content">{children}</div>
         </div>
       </main>
+      <ShopFooter />
       <MobileTabBar customer={headerCustomer} />
     </FavoritesProvider>
   );

@@ -6,7 +6,7 @@ type PageHeadingProps = {
   lead?: string;
 };
 
-/** Временная замена breadcrumbs: один h1 + подпись. */
+/** Заголовок страницы: один h1 + SEO-подпись. */
 export function PageHeading({ title, lead }: PageHeadingProps) {
   return (
     <header className="page-heading">

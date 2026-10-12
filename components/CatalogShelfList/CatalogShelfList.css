@@ -3,10 +3,22 @@
   scroll-margin-top: calc(var(--shop-header-height, 72px) + 16px);
 }
 
-.catalog-shelf-list__section h2 {
+.catalog-shelf-list__section h2,
+.catalog-shelf-list__products-heading {
   font-size: 48px;
   font-weight: 600;
-  margin-bottom: 1.8rem;
+  margin: 0 0 1.8rem;
+}
+
+.catalog-shelf-list__shelf-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.catalog-shelf-list__shelf-link:hover,
+.catalog-shelf-list__shelf-link:focus-visible {
+  opacity: 0.72;
 }
 
 .catalog-shelf-list__products {
@@ -28,7 +40,8 @@
 }
 
 @media (min-width: 900px) {
-  .catalog-shelf-list__section h2 {
+  .catalog-shelf-list__section h2,
+  .catalog-shelf-list__products-heading {
     font-size: 2rem;
   }
 }

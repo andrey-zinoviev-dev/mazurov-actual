@@ -162,23 +162,23 @@ function CatalogTree({
                 {isOpen ? "−" : "+"}
               </span>
             </button>
-            {isOpen ? (
-              <ul id={panelId} className="catalog-nav__shelves">
-                {root.shelves.map((shelf) => {
-                  const active = pathname === shelf.href;
-                  return (
-                    <li key={`${shelf.href}:${shelf.slug}`}>
-                      <Link
-                        href={shelf.href}
-                        className={linkClass(active)}
-                      >
-                        {shelf.name}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : null}
+            {/* Всегда в DOM — краулеры видят ссылки даже при закрытом аккордеоне */}
+            <ul
+              id={panelId}
+              className="catalog-nav__shelves"
+              hidden={!isOpen}
+            >
+              {root.shelves.map((shelf) => {
+                const active = pathname === shelf.href;
+                return (
+                  <li key={`${shelf.href}:${shelf.slug}`}>
+                    <Link href={shelf.href} className={linkClass(active)}>
+                      {shelf.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </li>
         );
       })}
@@ -240,7 +240,8 @@ function SidebarNav({
             {catalogOpen ? "−" : "+"}
           </span>
         </button>
-        {catalogOpen ? (
+        {/* Всегда в DOM: полки каталога доступны краулерам вне зависимости от аккордеона */}
+        <div hidden={!catalogOpen}>
           <CatalogTree
             id={panelId}
             allHref={allHref}
@@ -249,7 +250,7 @@ function SidebarNav({
             idPrefix="catalog-nav-sidebar"
             className="catalog-nav__tree catalog-nav__tree--nested"
           />
-        ) : null}
+        </div>
       </li>
 
       <li>

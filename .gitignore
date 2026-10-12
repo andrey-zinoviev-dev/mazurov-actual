@@ -34,6 +34,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# локальные выгрузки для one-off backfill (скрипт умеет качать из Sheets)
+/scripts/data/
+
 # prisma client
 /generated
 

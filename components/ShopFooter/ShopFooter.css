@@ -1,0 +1,46 @@
+.shop-footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
+.shop-footer__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.shop-footer__brand {
+  margin: 0;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.shop-footer__line {
+  margin: 0;
+  opacity: 0.55;
+}
+
+.shop-footer__line a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.shop-footer__line a:hover,
+.shop-footer__line a:focus-visible {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+@media (min-width: 900px) {
+  .shop-footer {
+    margin-top: 4rem;
+    font-size: 0.85rem;
+  }
+}

@@ -11,36 +11,37 @@ type BreadcrumbsProps = {
   items: BreadcrumbItem[];
 };
 
-/**
- * Путь страницы в роли h1: «каталог/камеры», «главная/корзина».
- * Временно не используется — смотрим PageHeading (h1 + подпись) на страницах.
- */
+/** Видимый trail для пользователей и краулеров (не h1). */
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
   if (items.length === 0) return null;
 
   return (
-    <h1 className="breadcrumbs">
-      {items.map((item, index) => {
-        const isLast = index === items.length - 1;
-        const href = !isLast ? item.href : undefined;
+    <nav className="breadcrumbs" aria-label="Хлебные крошки">
+      <ol className="breadcrumbs__list">
+        {items.map((item, index) => {
+          const isLast = index === items.length - 1;
+          const href = !isLast ? item.href : undefined;
 
-        return (
-          <span key={`${item.label}-${index}`} className="breadcrumbs__crumb">
-            {index > 0 ? (
-              <span className="breadcrumbs__sep" aria-hidden="true">
-                /
-              </span>
-            ) : null}
-            {href ? (
-              <Link href={href} className="breadcrumbs__link">
-                {item.label}
-              </Link>
-            ) : (
-              <span className="breadcrumbs__current">{item.label}</span>
-            )}
-          </span>
-        );
-      })}
-    </h1>
+          return (
+            <li key={`${item.label}-${index}`} className="breadcrumbs__crumb">
+              {index > 0 ? (
+                <span className="breadcrumbs__sep" aria-hidden="true">
+                  /
+                </span>
+              ) : null}
+              {href ? (
+                <Link href={href} className="breadcrumbs__link">
+                  {item.label}
+                </Link>
+              ) : (
+                <span className="breadcrumbs__current" aria-current="page">
+                  {item.label}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
   );
 }

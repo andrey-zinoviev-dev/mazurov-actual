@@ -29,18 +29,24 @@ export function ProductCard({
 }: ProductCardProps) {
   const { isFavorite, toggle } = useFavorites();
   const favorited = isFavorite(id);
+  const href = productPath({ id, slug });
 
   return (
     <article className="product-card">
-      {/* Растянутая ссылка на всю карточку; кнопки выше по z-index. */}
+      {/* Растянутая зона клика; название — отдельная ссылка с anchor text. */}
       <Link
-        href={productPath({ id, slug })}
+        href={href}
         className="product-card__link"
-        aria-label={name}
+        tabIndex={-1}
+        aria-hidden="true"
       />
 
       <header className="product-card__header">
-        <h3 className="product-card__title">{name}</h3>
+        <h3 className="product-card__title">
+          <Link href={href} className="product-card__title-link">
+            {name}
+          </Link>
+        </h3>
         <button
           type="button"
           className={`product-card__icon-btn${favorited ? " product-card__icon-btn--active" : ""}`}
@@ -57,7 +63,7 @@ export function ProductCard({
       <div className="product-card__media">
         <Image
           src={imageSrc}
-          alt=""
+          alt={name}
           fill
           sizes="(max-width: 640px) 100vw, 320px"
           className="product-card__image"

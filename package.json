@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "backfill:product-slugs": "tsx scripts/backfill-product-slugs.ts"
+    "backfill:product-slugs": "tsx scripts/backfill-product-slugs.ts",
+    "backfill:product-descriptions": "tsx scripts/backfill-product-descriptions.ts",
+    "backfill:category-descriptions": "tsx scripts/backfill-category-descriptions.ts"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.10.0",

@@ -61,3 +61,17 @@ html {
     align-items: start;
   }
 }
+
+.not-found-page__links {
+  margin: 0;
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+.not-found-page__links a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  opacity: 1;
+}

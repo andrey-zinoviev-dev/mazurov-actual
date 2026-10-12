@@ -14,8 +14,9 @@ export function localBusinessJsonLd(): Record<string, unknown> {
     name: SITE.name,
     description: SITE.defaultDescription,
     url: absoluteUrl("/"),
-    image: absoluteUrl(SITE.defaultOgImagePath),
+    image: absoluteUrl(SITE.logoPath),
     telephone: SITE.phoneE164,
+    priceRange: SITE.priceRange,
     address: {
       "@type": "PostalAddress",
       streetAddress: "ул. Павла Андреева, 23с10",
@@ -31,6 +32,7 @@ export function localBusinessJsonLd(): Record<string, unknown> {
       "@type": "City",
       name: SITE.city,
     },
+    ...(SITE.sameAs.length > 0 ? { sameAs: [...SITE.sameAs] } : {}),
   };
 }
 
@@ -44,9 +46,7 @@ export function breadcrumbListJsonLd(
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      ...(item.path
-        ? { item: absoluteUrl(item.path) }
-        : {}),
+      ...(item.path ? { item: absoluteUrl(item.path) } : {}),
     })),
   };
 }
@@ -59,19 +59,28 @@ export function productJsonLd(product: {
   stock: number;
   imageUrl: string;
   categoryName: string;
+  description?: string | null;
 }): Record<string, unknown> {
   const path = productPath(product);
+  const url = absoluteUrl(path);
   const availability =
     product.stock > 0
       ? "https://schema.org/InStock"
       : "https://schema.org/OutOfStock";
 
+  const description =
+    product.description?.trim() ||
+    `Аренда ${product.name} — ${product.price.toLocaleString("ru-RU")} ₽/день. ${product.categoryName}, самовывоз в Москве.`;
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
+    url,
+    sku: String(product.id),
+    productID: String(product.id),
     image: [product.imageUrl],
-    description: `Аренда ${product.name} — ${product.price.toLocaleString("ru-RU")} ₽/день. ${product.categoryName}, самовывоз в Москве.`,
+    description,
     category: product.categoryName,
     brand: {
       "@type": "Brand",
@@ -79,7 +88,7 @@ export function productJsonLd(product: {
     },
     offers: {
       "@type": "Offer",
-      url: absoluteUrl(path),
+      url,
       priceCurrency: "RUB",
       price: product.price.toFixed(2),
       availability,
@@ -125,4 +134,30 @@ export function contactsBreadcrumbs(): BreadcrumbItem[] {
     { name: "Главная", path: "/" },
     { name: "Контакты", path: "/contacts" },
   ];
+}
+
+/** Meta/lead: уникальный текст или шаблон. */
+export function productSeoDescription(product: {
+  name: string;
+  price: number;
+  categoryName: string;
+  description?: string | null;
+}): string {
+  const custom = product.description?.trim();
+  if (custom) {
+    return custom.length > 160 ? `${custom.slice(0, 157).trimEnd()}…` : custom;
+  }
+  const priceLabel = `${product.price.toLocaleString("ru-RU")} ₽/день`;
+  return `Аренда ${product.name} — ${priceLabel}. ${product.categoryName}, самовывоз в Москве.`;
+}
+
+export function categorySeoDescription(shelf: {
+  name: string;
+  description?: string | null;
+}): string {
+  const custom = shelf.description?.trim();
+  if (custom) {
+    return custom.length > 160 ? `${custom.slice(0, 157).trimEnd()}…` : custom;
+  }
+  return `Кинооборудование из раздела «${shelf.name}». Суточная аренда, самовывоз в Москве.`;
 }
