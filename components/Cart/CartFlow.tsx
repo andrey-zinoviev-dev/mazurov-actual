@@ -33,7 +33,7 @@ type AppliedPromo = {
 };
 
 function lineImageSrc(line: CartLine): string {
-  return line.imageSrc ?? productImageUrl({ id: line.id, image: null });
+  return line.imageSrc ?? productImageUrl({ id: line.id });
 }
 
 function formatRub(value: number): string {
